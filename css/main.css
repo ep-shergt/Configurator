@@ -1,0 +1,42 @@
+.jsonbox {
+	width: 450px;
+	height: 500px;
+	margin-top: 20px;
+}
+
+.top-margin20 {
+	margin-top: 20px;
+}
+
+.left-margin5 {
+	margin-left: 5px;
+}
+
+.left-margin10 {
+	margin-left: 10px;
+}
+
+.dropZone {
+	width: 80px;
+	height: 40px;
+	border-style: dashed;
+	border: 1px dashed #a1a1a1;
+}
+
+#mainArea {
+	font-size: 11px;
+}
+
+.padding10 {
+	padding: 10px;
+}
+
+td {
+   border-style: dashed;
+   border: 1px dashed #a1a1a1;
+}
+
+.special {
+	border-style: none !important;
+	border: none !important;
+}
