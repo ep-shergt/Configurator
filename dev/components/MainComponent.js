@@ -16,18 +16,20 @@ class MainComponent extends Component {
 
     render() {
     	return (
-	    	<div className="row">
-				<div className="col-md-12">
-					<div className="col-md-8">
-						<DnDField />
-					</div>
-					<div className="row">
-						<div className="col-md-4">
-							<Textbox geometry="jsonbox"/>
+    		<div className="container-fluid">
+		    	<div className="row">
+					<div className="col-md-12">
+						<div className="col-md-8">
+							<DnDField />
 						</div>
-					</div>	
-				</div>		
-	    	</div>   		
+						<div className="row">
+							<div className="col-md-4">
+								<Textbox geometry="jsonbox"/>
+							</div>
+						</div>	
+					</div>		
+		    	</div>   			
+    		</div>
 		);
     }
 }

@@ -1,10 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { render } from "react-dom";
+
 import MainComponent from "./components/MainComponent";
- 
-ReactDOM.render(
-  <div className="container-fluid">
-    <MainComponent />
-  </div>,
-  document.querySelector("#container")
-);  
+
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
+import { Provider } from 'react-redux';
+import store, { history } from './store';
+
+const router = (
+  <Router history={browserHistory}>
+    <Route path="/" component={MainComponent}>
+    </Route>
+  </Router>
+)
+
+render(router, document.getElementById('container')); 
