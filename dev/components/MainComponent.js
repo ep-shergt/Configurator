@@ -10,7 +10,7 @@ class MainComponent extends Component {
 
 	    //getinitialState
 	    this.state = {
-	  		jsonData: 'default' 
+	  		jsonData: this.props.store.jsonData 
 	    };
     }
 
@@ -24,7 +24,7 @@ class MainComponent extends Component {
 						</div>
 						<div className="row">
 							<div className="col-md-4">
-								<Textbox geometry="jsonbox"/>
+								<Textbox geometry="jsonbox" {...this.props}/>
 							</div>
 						</div>	
 					</div>		

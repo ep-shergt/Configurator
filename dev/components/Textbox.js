@@ -12,7 +12,7 @@ export default class Textbox extends Component {
 
     //getinitialState
     this.state = {
-      contentText: "Lorem Ipsum"
+      jsonData: this.props.store.jsonData.jsonData
     };
   }
 
@@ -50,22 +50,30 @@ export default class Textbox extends Component {
       fileReader.readAsText(fileToLoad, "UTF-8");
   }
 
+  handleChange(event){
+    this.setState({
+      jsonData: event.target.value
+    });
+  }
+
   componentDidMount() {
-    $('#mainArea').val(JSON.stringify(this.state.contentText, null, 2));
+    $('#mainArea').val(JSON.stringify(this.state.jsonData, null, 2));
   }
 
 
   render() {
+    const textareaValue = $('#mainArea').val();
     return (
-      <div>  
-        <div>Text to Save:</div>
-        <textarea id="mainArea" className={this.props.geometry}></textarea>     
+      <div className="margin-around">  
+        <div>Text to Save</div>
+        <textarea id="mainArea" className={this.props.geometry} onChange={this.handleChange.bind(this)}></textarea>     
             <div>Filename to Save As:</div>
             <input type="text" id="inputFileNameToSaveAs" />
             <input type="button" onClick={(e) => this.saveTextAsFile(e)} value="Save Text to File"/>
             <div>Select a File to Load:</div>
             <input type="file" id="fileToLoad" />
-            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Load Selected File"/>     
+            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Load Selected File"/>
+            <input type="button" onClick={this.props.exportJSON.bind(null, textareaValue)} value="Update JSON data"/>     
       </div>
     );
   };

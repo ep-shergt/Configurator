@@ -1,17 +1,22 @@
 // import JSON
 
-export function importJSON(file) {
+export function importJSON(jsonData) {
 	return {
-		type: 'IMPORT_FILE',
-		file
+		type: 'IMPORT_JSON',
+		jsonData
 	}
 }
 
 //export JSON
 
-export function exportJSON(file) {
+export function exportJSON(jsonData) {
 	return {
-		type: 'EXPORT_FILE',
-		file
+		type: 'EXPORT_JSON',
+		jsonData
 	}
 }
+
+//import * as user from "../actionCreators";
+//import { importJSON } from "../actionCreators"
+
+//user.importJSON()

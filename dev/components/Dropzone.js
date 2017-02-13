@@ -1,77 +1,55 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import { findDOMNode } from 'react-dom';
-import { DropTarget } from 'react-dnd';
-import Constants from './Constants';
 
 class Dropzone extends Component {
 
   constructor(props) {
     super(props);
 
-    this.generateTable = this.generateTable.bind(this);
-    this.addCell = this.addCell.bind(this);
+    this.duplicateElement = this.duplicateElement.bind(this);
 
-    //getinitialState
     this.state = {
-  		dndMatrix: [6,6,6,6,6,6,6,6,6,6]
+  
     };
   }
 
-  addCell(event) {
-    var buttonIDNumber = event.target.id.slice(3,4),
-        targetRow = document.getElementById("row" + buttonIDNumber),
-        newCell = targetRow.insertCell(0);
-
-    console.log(newCell);
-  }
-
-  removeCell(event) {
-    var buttonIDNumber = event.target.id.slice(6,7),
-        targetRow = document.getElementById("row" + buttonIDNumber);
-
-    targetRow.deleteCell(0);
-
-    console.log('clicko');
-  }
-
-  generateTable() {
-    var dropZoneTableNode = '<table><tbody>';
-
-    for (var i = 0; i < this.state.dndMatrix.length; i++) {
-
-      dropZoneTableNode += "<tr id=row" + i + ">";
-
-      for (var j = 0; j < this.state.dndMatrix[j]; j++) {
-        dropZoneTableNode += "<td align='center' class='dropZone'></td>"                    
-      }
-      dropZoneTableNode += "<td class='special'><button id=add" + i + " type='button' class='left-margin10 btn btn-success btn-xs'><span class='glyphicon glyphicon-ok'></span></button>" + 
-                      "<button id=remove" + i + " type='button' class='left-margin10 btn btn-danger btn-xs'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
-    }
-
-    // end the table 
-    dropZoneTableNode += "</tbody></table>";
-
-    // attach table string to component
-    $('#dropZoneTableNode').append(dropZoneTableNode);
-    console.log(dropZoneTableNode);
-
+  duplicateElement(event) {
+    console.log('dupliziere');
   }
 
   componentDidMount() {
-    this.generateTable();
-
-    for (var i = 0; i < this.state.dndMatrix.length; i++) {
-       $('#add' + i).on("click", this.addCell);
-       $('#remove' + i).on("click", this.removeCell);
-    }
+    $('.dropdown-toggle').dropdown();
   }
 
   render() {
     return (
       <div>
-        <div className="padding10">Dropzone Areas</div>
-        <div id="dropZoneTableNode"></div>
+        <div className="padding10 margin-bottom-30">Dropzone Areas</div>
+        <div id="dropZoneTableNode">
+          <div id="a1" className="btn-group align-with-tag">
+            <button className="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Steuerelement <span className="caret"></span>
+            </button>
+            <ul className="dropdown-menu">
+              <li><a href="#">Inputtext</a></li>
+              <li><a href="#">Textbox</a></li>
+              <li><a href="#">Radiobutton</a></li>
+              <li><a href="#">Checkbox</a></li>
+              <li><a href="#">Code</a></li>
+            </ul>
+          </div>
+          <div className="drop-node-wrapper">
+            <span className="drop-node">Steuerelement einfügen</span>
+            <ul className="button-list">
+              <li><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></li>
+              <li>
+                <span className="glyphicon glyphicon-circle-arrow-right" aria-hidden="true" 
+                      onClick={(e) => this.duplicateElement(e)}>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   };
