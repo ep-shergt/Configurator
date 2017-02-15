@@ -9,16 +9,21 @@ class DnDField extends Component {
 
     //getinitialState
     this.state = {
-  
+      jsonData: this.props.store.jsonData.jsonData
     };
   }
 
+  componentDidMount() {
+    console.log('jsonData from DndField: ', this.state.jsonData);
+  }
+
   render() {
-    return (<div id="dndfield" className="row top-margin20">
-  						<div className="col-md-8">
-  							<Dropzone geometry="none" />
-  						</div>
-					  </div>);
+    return (<div>
+              <div className="padding10">Dropzone Areas</div>
+              <div id="dndfield" className="row top-margin20 dnd-grid">
+    						{this.state.jsonData.fields.map((field, i) => <Dropzone {...this.props} key={i} i={i} field={field}/>)}
+  					  </div>
+            </div>);
   };
 }
 

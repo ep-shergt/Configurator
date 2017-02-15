@@ -53,3 +53,21 @@ ul.dropdown-menu {
 ul.button-list>li {
 	cursor: pointer;
 }
+
+.dnd-grid {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dropZoneTableNode {
+	margin: 15px 10px;
+}
+
+
+.radio-values {
+	margin-right: 4px;
+	margin-left: 2px;
+}
+

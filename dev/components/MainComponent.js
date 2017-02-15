@@ -20,7 +20,7 @@ class MainComponent extends Component {
 		    	<div className="row">
 					<div className="col-md-12">
 						<div className="col-md-8">
-							<DnDField />
+							<DnDField {...this.props}/>
 						</div>
 						<div className="row">
 							<div className="col-md-4">

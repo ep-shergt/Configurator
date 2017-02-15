@@ -23984,7 +23984,7 @@
 							_react2.default.createElement(
 								'div',
 								{ className: 'col-md-8' },
-								_react2.default.createElement(_DnDField2.default, null)
+								_react2.default.createElement(_DnDField2.default, this.props)
 							),
 							_react2.default.createElement(
 								'div',
@@ -24153,6 +24153,8 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -24182,20 +24184,36 @@
 	    //getinitialState
 	    var _this = _possibleConstructorReturn(this, (DnDField.__proto__ || Object.getPrototypeOf(DnDField)).call(this, props));
 
-	    _this.state = {};
+	    _this.state = {
+	      jsonData: _this.props.store.jsonData.jsonData
+	    };
 	    return _this;
 	  }
 
 	  _createClass(DnDField, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      console.log('jsonData from DndField: ', this.state.jsonData);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+
 	      return _react2.default.createElement(
 	        'div',
-	        { id: 'dndfield', className: 'row top-margin20' },
+	        null,
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'col-md-8' },
-	          _react2.default.createElement(_Dropzone2.default, { geometry: 'none' })
+	          { className: 'padding10' },
+	          'Dropzone Areas'
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { id: 'dndfield', className: 'row top-margin20 dnd-grid' },
+	          this.state.jsonData.fields.map(function (field, i) {
+	            return _react2.default.createElement(_Dropzone2.default, _extends({}, _this2.props, { key: i, i: i, field: field }));
+	          })
 	        )
 	      );
 	    }
@@ -24215,6 +24233,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24241,8 +24261,12 @@
 	    var _this = _possibleConstructorReturn(this, (Dropzone.__proto__ || Object.getPrototypeOf(Dropzone)).call(this, props));
 
 	    _this.duplicateElement = _this.duplicateElement.bind(_this);
+	    _this.updateField = _this.updateField.bind(_this);
+	    _this.createRadioElement = _this.createRadioElement.bind(_this);
 
-	    _this.state = {};
+	    _this.state = {
+	      field: _this.props.field
+	    };
 	    return _this;
 	  }
 
@@ -24252,109 +24276,186 @@
 	      console.log('dupliziere');
 	    }
 	  }, {
+	    key: 'createRadioElement',
+	    value: function createRadioElement(name, value, checked) {
+	      var radioHtml = '<input type="radio" name="' + name + '" value="' + value + '"',
+	          radioFragment = document.createElement('div');
+
+	      if (checked) {
+	        radioHtml += ' checked="checked"';
+	      }
+
+	      radioHtml += '/>';
+	      radioFragment.innerHTML = radioHtml;
+
+	      return radioFragment.firstChild;
+	    }
+	  }, {
+	    key: 'updateField',
+	    value: function updateField(newField) {
+	      var field = _extends({}, this.state.field);
+	      field = newfield;
+	      this.setState({ field: field });
+	    }
+	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var type = this.state.field.type,
+	          typeId = type + "_" + this.props.i,
+	          title = this.state.field.title,
+	          options = this.state.field.parameters.options;
+
 	      $('.dropdown-toggle').dropdown();
+	      $('#' + typeId).html(title);
+
+	      switch (type) {
+	        case "select":
+	          var selectValues = options.map(function (element, i) {
+	            return element.value;
+	          }),
+	              select = document.createElement('select'),
+	              selectId = "select" + this.props.i;
+
+	          for (var i = 0; i < selectValues.length; i++) {
+	            var new_option_element = new Option(selectValues[i], selectValues[i]);
+	            select.appendChild(new_option_element);
+	          }
+	          document.getElementById(selectId).appendChild(select);
+	          break;
+
+	        case "radio":
+	          var radioId = "radio" + this.props.i,
+	              radioTitles = options.map(function (element, i) {
+	            return element.title;
+	          }),
+	              radioValues = options.map(function (element, i) {
+	            return element.value;
+	          });
+
+	          for (var _i = 0; _i < radioTitles.length; _i++) {
+	            var radio = this.createRadioElement(this.state.field.key, radioValues[_i], false),
+	                newRadio = document.getElementById(radioId).appendChild(radio),
+	                pTag = document.createElement('span'),
+	                text = document.createTextNode(radioValues[_i]);
+
+	            pTag.setAttribute("class", "radio-values");
+	            pTag.appendChild(text);
+	            document.getElementById(radioId).appendChild(pTag);
+	          }
+	          break;
+
+	        /*case "check":
+	        	const checkId = "check" + this.props.i,
+	        				checkTitles = options.map((element, i) => element.title),
+	        				checkValues = options.map((element, i) => element.value);
+	        	
+	        	for(let i = 0; i < checkTitles.length; i++) {
+	        		const check = this.createCheckElement(this.state.field.key, checkValues[i], false),
+	        		      newCheck = document.getElementById(radioId).appendChild(check),
+	        		      pTag2 = document.createElement('span'),
+	        		      text2 = document.createTextNode(checkValues[i]);
+	         		pTag2.setAttribute("class", "check-values");
+	        		pTag2.appendChild(text2);
+	        		document.getElementById(checkId).appendChild(pTag2);
+	        	}	
+	        	break;*/
+	      }
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
 
+	      var type = this.state.field.type,
+	          typeId = type + "_" + this.props.i;
+
+	      var controlElement = void 0;
+
+	      var controlElementId = type + this.props.i;
+	      controlElement = _react2.default.createElement('span', { id: controlElementId, className: 'drop-node' });
+
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'dropZoneTableNode' },
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'padding10 margin-bottom-30' },
-	          'Dropzone Areas'
+	          { id: 'a1', className: 'btn-group align-with-tag' },
+	          _react2.default.createElement(
+	            'button',
+	            { className: 'btn btn-default btn-xs dropdown-toggle', type: 'button', 'data-toggle': 'dropdown', 'aria-haspopup': 'true', 'aria-expanded': 'false' },
+	            'Steuerelement ',
+	            _react2.default.createElement('span', { className: 'caret' })
+	          ),
+	          _react2.default.createElement(
+	            'ul',
+	            { className: 'dropdown-menu' },
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                { href: '#' },
+	                'Inputtext'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                { href: '#' },
+	                'Textbox'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                { href: '#' },
+	                'Radiobutton'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                { href: '#' },
+	                'Checkbox'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                { href: '#' },
+	                'Code'
+	              )
+	            )
+	          )
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { id: 'dropZoneTableNode' },
+	          { className: 'drop-node-wrapper' },
+	          _react2.default.createElement('div', { id: typeId }),
+	          controlElement,
 	          _react2.default.createElement(
-	            'div',
-	            { id: 'a1', className: 'btn-group align-with-tag' },
+	            'ul',
+	            { className: 'button-list' },
 	            _react2.default.createElement(
-	              'button',
-	              { className: 'btn btn-default btn-xs dropdown-toggle', type: 'button', 'data-toggle': 'dropdown', 'aria-haspopup': 'true', 'aria-expanded': 'false' },
-	              'Steuerelement ',
-	              _react2.default.createElement('span', { className: 'caret' })
+	              'li',
+	              null,
+	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
 	            ),
 	            _react2.default.createElement(
-	              'ul',
-	              { className: 'dropdown-menu' },
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  'a',
-	                  { href: '#' },
-	                  'Inputtext'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  'a',
-	                  { href: '#' },
-	                  'Textbox'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  'a',
-	                  { href: '#' },
-	                  'Radiobutton'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  'a',
-	                  { href: '#' },
-	                  'Checkbox'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  'a',
-	                  { href: '#' },
-	                  'Code'
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'drop-node-wrapper' },
-	            _react2.default.createElement(
-	              'span',
-	              { className: 'drop-node' },
-	              'Steuerelement einf\xFCgen'
-	            ),
-	            _react2.default.createElement(
-	              'ul',
-	              { className: 'button-list' },
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement('span', { className: 'glyphicon glyphicon-circle-arrow-right', 'aria-hidden': 'true',
-	                  onClick: function onClick(e) {
-	                    return _this2.duplicateElement(e);
-	                  } })
-	              )
+	              'li',
+	              null,
+	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-circle-arrow-right', 'aria-hidden': 'true',
+	                onClick: function onClick(e) {
+	                  return _this2.duplicateElement(e);
+	                } })
 	            )
 	          )
 	        )
