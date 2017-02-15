@@ -71,3 +71,12 @@ ul.button-list>li {
 	margin-left: 2px;
 }
 
+.align-center {
+	text-align: center;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+

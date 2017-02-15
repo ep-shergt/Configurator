@@ -66,7 +66,7 @@ export default class Textbox extends Component {
     return (
       <div className="margin-around">  
         <div>Text to Save</div>
-        <textarea id="mainArea" className={this.props.geometry} onChange={this.handleChange.bind(this)}></textarea>     
+        <textarea id="mainArea" className="jsonbox" onChange={this.handleChange.bind(this)}></textarea>     
             <div>Filename to Save As:</div>
             <input type="text" id="inputFileNameToSaveAs" />
             <input type="button" onClick={(e) => this.saveTextAsFile(e)} value="Save Text to File"/>

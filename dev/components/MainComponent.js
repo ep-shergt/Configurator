@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Textbox from './Textbox';
 import DnDField from './DnDField';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import Configurator from './Configurator'; 
 
 class MainComponent extends Component {
 
@@ -19,14 +21,23 @@ class MainComponent extends Component {
     		<div className="container-fluid">
 		    	<div className="row">
 					<div className="col-md-12">
-						<div className="col-md-8">
-							<DnDField {...this.props}/>
-						</div>
-						<div className="row">
-							<div className="col-md-4">
-								<Textbox geometry="jsonbox" {...this.props}/>
-							</div>
-						</div>	
+						<Tabs onSelect={this.handleSelect}>
+							<TabList>
+								<Tab>Konfigurator</Tab>
+								<Tab>Vorschauansicht</Tab>
+								<Tab>JSON editieren</Tab>
+							</TabList>
+							<TabPanel>
+								<Configurator {...this.props}/>
+							</TabPanel>
+							<TabPanel>
+								<DnDField {...this.props}/>
+							</TabPanel>
+							<TabPanel>
+								<Textbox {...this.props}/>
+							</TabPanel>
+						</Tabs>
+
 					</div>		
 		    	</div>   			
     		</div>
