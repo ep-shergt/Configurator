@@ -4,6 +4,7 @@ import Textbox from './Textbox';
 import DnDField from './DnDField';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import Configurator from './Configurator'; 
+import Accordion from './Accordion';
 
 class MainComponent extends Component {
 
@@ -12,7 +13,44 @@ class MainComponent extends Component {
 
 	    //getinitialState
 	    this.state = {
-	  		jsonData: this.props.store.jsonData 
+	  		jsonData: this.props.store.jsonData,
+	  		accData: [{
+	  			title: "PrimOne",
+	  			content: [{
+		  			title: "SubOne",
+		  			content: 'Leo hbj hh ngh'
+		  		}, {
+		  			title:"SubTwo",
+		  			content: 'Leohvz zgzz hgz'
+		  		}, {
+		  			title: "SubThree",
+		  			content: 'buz hgb hbg'
+		  		}]
+	  		}, {
+	  			title:"PrimTwo",
+	  			content: [{
+		  			title: "SubOne2",
+		  			content: 'Leo hbj hh ngh'
+		  		}, {
+		  			title:"SubTwo2",
+		  			content: 'Leohvz zgzz hgz'
+		  		}, {
+		  			title: "SubThree2",
+		  			content: 'buz hgb hbg'
+		  		}]
+	  		}, {
+	  			title: "PrimThree",
+	  			content: [{
+		  			title: "SubOne3",
+		  			content: 'Leo hbj hh ngh'
+		  		}, {
+		  			title:"SubTwo3",
+		  			content: 'Leohvz zgzz hgz'
+		  		}, {
+		  			title: "SubThree3",
+		  			content: 'buz hgb hbg'
+		  		}]
+	  		}]
 	    };
     }
 
@@ -28,7 +66,12 @@ class MainComponent extends Component {
 								<Tab>JSON editieren</Tab>
 							</TabList>
 							<TabPanel>
-								<Configurator {...this.props}/>
+								<div className="col-md-8">
+									<Accordion data={this.state.accData} {...this.props}/>
+								</div>
+								<div className="col-md-4 editor-panel">
+									<h2>Panel</h2>
+								</div>
 							</TabPanel>
 							<TabPanel>
 								<DnDField {...this.props}/>
