@@ -11,17 +11,19 @@ class SubAccordion extends Component {
 
     this.state = {
       jsonData: this.props.store.jsonData.jsonData,
-      subAccordionItems: []
+      subAccordionItems: [],
+      fields: this.props.store.jsonData.jsonData.fields
     };
   }
 
   componentWillMount() {
     let subAccordion = [];
 
-    this.props.elem.content.forEach((i) => {
+    this.props.elem.content.forEach((j) => {
       subAccordion.push({
-        title: i.title,
-        content: i.content,
+        key: j.key,
+        title: j.title,
+        content: j.content,
         open: false
       });
     });
@@ -31,31 +33,26 @@ class SubAccordion extends Component {
     });
   }
 
-  click(event, i) {
-    console.log(i);
+  click(event, j){ 
     const newSubAccordion = this.state.subAccordionItems.slice();
-    console.log('newsubacc: ', newSubAccordion);
 
-    newSubAccordion[i].open = !newSubAccordion[i].open;
+    newSubAccordion[j].open = !newSubAccordion[j].open;
     this.setState({
       subAccordionItems: newSubAccordion
     });
   }
 
   componentDidMount() {
-    console.log(this.state)
+
   }
 
   render() {
-    const cont = this.props.elem;
-    console.log('elem: ', this.props.elem);
-    console.log('items: ', this.state.subAccordionItems);
 
     return (
       <div>
         <div 
           className="title" 
-          onClick={(e) => this.props.click(e, this.props.i)}
+          onClick={(e) => this.props.click(e, this.props.groupOne)}
         >
          
          <span className="title-text">
@@ -77,8 +74,38 @@ class SubAccordion extends Component {
             : "content-text"}>
             <div>
               <div>
-                {this.state.subAccordionItems.map((elem, i) =>
-                 <AccordionSection {...this.props} click={this.click} key={i} i={i} elem={elem}/>)}
+                {this.state.subAccordionItems.map((elem, j) => {
+                  let groupOneKey = this.props.elem.key,
+                      groupTwoKey = elem.key,
+                      fieldGroup,
+                      fieldsPerGroups = [];
+
+                  fieldGroup = groupOneKey + '|' + groupTwoKey;
+                  console.log('fieldgroup', fieldGroup);
+
+                  this.state.fields.map((field, k) => {
+                    if (field.hasOwnProperty('group') && field.group === fieldGroup) {
+                      fieldsPerGroups.push(field);
+                    }
+                  });
+                  console.log('fieldsPerGroups: ', fieldsPerGroups);
+
+                  return (
+                    <div key={j}>
+                      <div className="group-bar-level-one"><AccordionSection {...this.props} click={this.click} groupTwo={j} groupOne={this.props.groupOne} elem={elem} fieldsPerGroups={fieldsPerGroups}/></div>
+                      <div className="group-buttons-level-one">
+                        <div className="btn-group-vertical" role="group" aria-label="edit">
+                          <button type="button" className="btn btn-default btn-xs">
+                            <i className="fa fa-times" aria-hidden="true"></i>
+                          </button>
+                          <button type="button" className="btn btn-default btn-xs">
+                            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

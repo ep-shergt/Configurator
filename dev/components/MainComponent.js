@@ -15,40 +15,40 @@ class MainComponent extends Component {
 	    this.state = {
 	  		jsonData: this.props.store.jsonData,
 	  		accData: [{
-	  			title: "PrimOne",
+	  			title: "Gruppe Level 1.1",
 	  			content: [{
-		  			title: "SubOne",
-		  			content: 'Leo hbj hh ngh'
+		  			title: "Gruppe Level 1.2.1",
+		  			content: 'Fields'
 		  		}, {
-		  			title:"SubTwo",
-		  			content: 'Leohvz zgzz hgz'
+		  			title:"Gruppe Level 1.2.2",
+		  			content: 'Fields'
 		  		}, {
-		  			title: "SubThree",
-		  			content: 'buz hgb hbg'
+		  			title: "Gruppe Level 1.2.3",
+		  			content: 'Fields'
 		  		}]
 	  		}, {
-	  			title:"PrimTwo",
+	  			title:"Gruppe Level 1.2",
 	  			content: [{
-		  			title: "SubOne2",
-		  			content: 'Leo hbj hh ngh'
+		  			title: "Gruppe Level 2.2.1",
+		  			content: 'Fields'
 		  		}, {
-		  			title:"SubTwo2",
-		  			content: 'Leohvz zgzz hgz'
+		  			title:"Gruppe Level 2.2.2",
+		  			content: 'Fields'
 		  		}, {
-		  			title: "SubThree2",
-		  			content: 'buz hgb hbg'
+		  			title: "Gruppe Level 2.2.3",
+		  			content: 'Fields'
 		  		}]
 	  		}, {
-	  			title: "PrimThree",
+	  			title: "Gruppe Level 1.3",
 	  			content: [{
-		  			title: "SubOne3",
-		  			content: 'Leo hbj hh ngh'
+		  			title: "Gruppe Level 3.2.1",
+		  			content: 'Fields'
 		  		}, {
-		  			title:"SubTwo3",
-		  			content: 'Leohvz zgzz hgz'
+		  			title:"Gruppe Level 3.2.2",
+		  			content: 'Fields'
 		  		}, {
-		  			title: "SubThree3",
-		  			content: 'buz hgb hbg'
+		  			title: "Gruppe Level 3.2.3",
+		  			content: 'Fields'
 		  		}]
 	  		}]
 	    };
@@ -67,7 +67,7 @@ class MainComponent extends Component {
 							</TabList>
 							<TabPanel>
 								<div className="col-md-8">
-									<Accordion data={this.state.accData} {...this.props}/>
+									<Accordion {...this.props}/>
 								</div>
 								<div className="col-md-4 editor-panel">
 									<h2>Panel</h2>

@@ -7,16 +7,24 @@ class AccordionSection extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      jsonData: this.props.store.jsonData.jsonData
+    };
+  }
+
+  componentWillMount() {
+    console.log(this.state.fields);
   }
 
   render () {
+    console.log('props: ', this.props.store.groupNumber.groupNumber);
     return (
       <div>
         <div 
           className="title" 
-          onClick={(e) => this.props.click(e, this.props.i)}
-        >
-         
+          onClick={(e) => this.props.click(e, this.props.groupTwo)}
+        >      
          <span className="title-text">
             {this.props.elem.title}
          </span>

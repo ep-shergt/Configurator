@@ -84,4 +84,14 @@ ul.button-list>li {
 	text-align: center;
 }
 
+.group-bar-level-one {
+	display: table-cell;
+	width: 900px;
+}
+
+.group-buttons-level-one {
+	display: table-cell;
+}
+
+
 

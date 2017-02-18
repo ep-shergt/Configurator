@@ -14,10 +14,12 @@ export default rootReducer;*/
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import exportFiles from './exportFiles';
+import changeJSON from './changeJSON';
+import changeGroupNumber from './changeGroupNumber';
 
 const rootReducer = combineReducers({
-	jsonData: exportFiles,
+	groupNumber: changeGroupNumber,
+	jsonData: changeJSON,
 	routing: routerReducer
 });
 

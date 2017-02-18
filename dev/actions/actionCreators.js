@@ -1,18 +1,25 @@
 // import JSON
 
-export function importJSON(jsonData) {
+/*export function importJSON(jsonData) {
 	return {
 		type: 'IMPORT_JSON',
 		jsonData
 	}
-}
+}*/
 
 //export JSON
 
-export function exportJSON(jsonData) {
+export function changeJSON(jsonData) {
 	return {
-		type: 'EXPORT_JSON',
+		type: 'CHANGE_JSON',
 		jsonData
+	}
+}
+
+export function changeGroupNumber(groupNumber) {
+	return {
+		type: 'CHANGE_NUMBER',
+		groupNumber
 	}
 }
 

@@ -21,9 +21,9 @@ export default importFiles;*/
 
 import jsonData from '../data/JSONExample';
 
-const exportFiles = (state = {jsonData}, action) => {
+const changeJSON = (state = {jsonData}, action) => {
 	switch(action.type){
-		case "EXPORT_JSON": {
+		case "CHANGE_JSON": {
 			console.log('run export file action');
 			state = {...state, jsonData: action.jsonData}
 			break;
@@ -32,4 +32,4 @@ const exportFiles = (state = {jsonData}, action) => {
 	return state;
 }
 
-export default exportFiles;
+export default changeJSON;

@@ -5,6 +5,7 @@ import * as actionCreators from '../actions/actionCreators';
 import MainComponent from './MainComponent';
 
 function mapStateToProps (store) {
+	console.log('store from App: ', store);
 	return {
 		store
 	};

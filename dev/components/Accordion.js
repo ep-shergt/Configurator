@@ -16,12 +16,14 @@ class Accordion extends Component {
   }
 
   componentWillMount() {
-    let accordion = [];
+    let accordion = [],
+        groups = this.state.jsonData.groups;
 
-    this.props.data.forEach((i) => {
+    groups.forEach((i) => {
       accordion.push({
+        key: i.key,
         title: i.title,
-        content: i.content,
+        content: i.groups,
         open: false
       });
     });
@@ -49,8 +51,23 @@ class Accordion extends Component {
     return (
       <div className="accordion">
         <div>
-          {this.state.accordionItems.map((elem, i) =>
-           <SubAccordion {...this.props} click={this.click} key={i} i={i} elem={elem}/>)}
+          {this.state.accordionItems.map((elem, i) => {
+            return (
+              <div key={i}>
+                <div className="group-bar-level-one"><SubAccordion {...this.props} click={this.click} groupOne={i} elem={elem}/></div>
+                <div className="group-buttons-level-one">
+                  <div className="btn-group-vertical" role="group" aria-label="edit">
+                    <button type="button" className="btn btn-default btn-xs">
+                      <i className="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" className="btn btn-default btn-xs">
+                      <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

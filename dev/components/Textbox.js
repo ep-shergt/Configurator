@@ -73,7 +73,7 @@ export default class Textbox extends Component {
             <div>Select a File to Load:</div>
             <input type="file" id="fileToLoad" />
             <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Load Selected File"/>
-            <input type="button" onClick={this.props.exportJSON.bind(null, textareaValue)} value="Update JSON data"/>     
+            <input type="button" onClick={this.props.changeJSON.bind(null, textareaValue)} value="Update JSON data"/>     
       </div>
     );
   };
