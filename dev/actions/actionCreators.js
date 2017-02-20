@@ -23,6 +23,20 @@ export function changeGroupNumber(groupNumber) {
 	}
 }
 
+export function deleteGroupLevelOne(jsonData) {
+	return {
+		type: 'CHANGE_GROUP_L1',
+		jsonData
+	}
+}
+
+export function deleteGroupLevelTwo(jsonData) {
+	return {
+		type: 'CHANGE_GROUP_L2',
+		jsonData
+	}
+}
+
 //import * as user from "../actionCreators";
 //import { importJSON } from "../actionCreators"
 

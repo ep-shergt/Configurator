@@ -81,14 +81,12 @@ class SubAccordion extends Component {
                       fieldsPerGroups = [];
 
                   fieldGroup = groupOneKey + '|' + groupTwoKey;
-                  console.log('fieldgroup', fieldGroup);
 
-                  this.state.fields.map((field, k) => {
+                  this.props.fieldsPerGroup.map((field, k) => {
                     if (field.hasOwnProperty('group') && field.group === fieldGroup) {
                       fieldsPerGroups.push(field);
                     }
                   });
-                  console.log('fieldsPerGroups: ', fieldsPerGroups);
 
                   return (
                     <div key={j}>
@@ -96,7 +94,7 @@ class SubAccordion extends Component {
                       <div className="group-buttons-level-one">
                         <div className="btn-group-vertical" role="group" aria-label="edit">
                           <button type="button" className="btn btn-default btn-xs">
-                            <i className="fa fa-times" aria-hidden="true"></i>
+                            <i className="fa fa-check" aria-hidden="true"></i>
                           </button>
                           <button type="button" className="btn btn-default btn-xs">
                             <i className="fa fa-pencil-square-o" aria-hidden="true"></i>

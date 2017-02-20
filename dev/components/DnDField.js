@@ -14,7 +14,7 @@ class DnDField extends Component {
   }
 
   componentDidMount() {
-    console.log('jsonData from DndField: ', this.state.jsonData);
+  
   }
 
   render() {
