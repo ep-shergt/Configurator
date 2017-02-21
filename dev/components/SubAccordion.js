@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import AccordionSection from './AccordionSection';
+import { removeArrayElement } from './../helpers'; 
 
 class SubAccordion extends Component {
 
@@ -8,12 +9,71 @@ class SubAccordion extends Component {
     super(props);
 
     this.click = this.click.bind(this);
+    this.updateSubAccordionItems = this.updateSubAccordionItems.bind(this);
+    this.deleteGroupLevelTwo = this.deleteGroupLevelTwo.bind(this);
+    this.markForCopy = this.markForCopy.bind(this);
 
     this.state = {
       jsonData: this.props.store.jsonData.jsonData,
       subAccordionItems: [],
-      fields: this.props.store.jsonData.jsonData.fields
+      elementsToCopy: []
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let newItems = nextProps.elem.content;
+    this.updateSubAccordionItems(newItems);
+  }
+
+  deleteGroupLevelTwo(elem, index) {
+    let subAccordionItems = removeArrayElement(this.state.subAccordionItems, index);
+    
+    this.setState({
+      subAccordionItems
+    });
+  }
+
+  markForCopy(elem, index) {
+    const buttonId = 'btn_group_level_two_mark_' + index;
+    let elementsToCopy = [...this.state.elementsToCopy],
+        indexForElementToRemove;
+
+    if ($('#' + buttonId).hasClass('marked')) {
+      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
+        return arrayElement.key;
+      }).indexOf(elem.key);
+
+      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
+
+      $('#' + buttonId).removeClass('marked');
+    } else {
+      elementsToCopy.push(this.state.subAccordionItems[index]);
+      $('#' + buttonId).addClass('marked');      
+    }
+
+    this.setState({
+      elementsToCopy
+    });
+  }
+
+  updateSubAccordionItems(newItems) {
+    let subAccordion = [],
+        subAccordionItems = [...this.state.subAccordionItems];
+
+    newItems.forEach((j) => {
+      subAccordion.push({
+        key: j.key,
+        title: j.title,
+        content: j.fields,
+        open: false
+      });
+    });
+        
+    subAccordionItems = subAccordion;
+
+    this.setState({ 
+      subAccordionItems
+    });
   }
 
   componentWillMount() {
@@ -23,7 +83,7 @@ class SubAccordion extends Component {
       subAccordion.push({
         key: j.key,
         title: j.title,
-        content: j.content,
+        content: j.fields,
         open: false
       });
     });
@@ -53,8 +113,7 @@ class SubAccordion extends Component {
         <div 
           className="title" 
           onClick={(e) => this.props.click(e, this.props.groupOne)}
-        >
-         
+        >        
          <span className="title-text">
             {this.props.elem.title}
          </span>
@@ -75,30 +134,27 @@ class SubAccordion extends Component {
             <div>
               <div>
                 {this.state.subAccordionItems.map((elem, j) => {
-                  let groupOneKey = this.props.elem.key,
-                      groupTwoKey = elem.key,
-                      fieldGroup,
-                      fieldsPerGroups = [];
-
-                  fieldGroup = groupOneKey + '|' + groupTwoKey;
-
-                  this.props.fieldsPerGroup.map((field, k) => {
-                    if (field.hasOwnProperty('group') && field.group === fieldGroup) {
-                      fieldsPerGroups.push(field);
-                    }
-                  });
+                  let buttonId = "btn_group_level_two_mark_" + j;
 
                   return (
                     <div key={j}>
-                      <div className="group-bar-level-one"><AccordionSection {...this.props} click={this.click} groupTwo={j} groupOne={this.props.groupOne} elem={elem} fieldsPerGroups={fieldsPerGroups}/></div>
+                      <div className="group-bar-level-one"><AccordionSection {...this.props} click={this.click} groupTwo={j} groupOne={this.props.groupOne} elem={elem}/></div>
                       <div className="group-buttons-level-one">
                         <div className="btn-group-vertical" role="group" aria-label="edit">
-                          <button type="button" className="btn btn-default btn-xs">
+                          <button id={buttonId} type="button" className="btn btn-default btn-xs" onClick={() => this.markForCopy(elem, j)}>
                             <i className="fa fa-check" aria-hidden="true"></i>
                           </button>
-                          <button type="button" className="btn btn-default btn-xs">
-                            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                          </button>
+                          <div className="dropdown">
+                            <button type="button" className="btn btn-default btn-xs" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </button>
+                            <ul className="dropdown-menu">
+                              <li><a href="#"><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element</a></li>
+                              <li><a href="#"><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden</a></li>
+                              <li><a href="#"><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i>Einfügen</a></li>
+                              <li><a href="#" onClick={() => this.deleteGroupLevelTwo(elem, j)}><i className="fa-margin fa fa-times" aria-hidden="true"></i>Löschen</a></li>
+                            </ul>
+                          </div>          
                         </div>
                       </div>
                     </div>

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 import Field from "./Field";
-import { extractContent } from './../helpers';
+import { removeArrayElement } from './../helpers';
 
 // stateless functional component
 
@@ -11,32 +11,61 @@ class AccordionSection extends Component {
     super(props);
 
     this.deleteField = this.deleteField.bind(this);
+    this.updateFields = this.updateFields.bind(this);
+    this.markForCopy = this.markForCopy.bind(this);
+
 
     this.state = {
       jsonData: this.props.store.jsonData.jsonData,
-      fields: this.props.fieldsPerGroups
+      fields: this.props.elem.content,
+      elementsToCopy: []
     };
   }
 
-  componentWillMount() {
-    
+  componentWillReceiveProps(nextProps) {
+    let newFields = nextProps.elem.content;
+    this.updateFields(newFields);
+  }
+
+  updateFields(newFields) {
+    let fields = [...this.state.fields];
+
+    fields = newFields;
+    this.setState({
+      fields
+    });
+  }
+
+  markForCopy(elem, index) {
+    const buttonId = 'btn_field_' + index;
+    let elementsToCopy = [...this.state.elementsToCopy],
+        indexForElementToRemove;
+
+    if ($('#' + buttonId).hasClass('marked')) {
+      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
+        return arrayElement.key;
+      }).indexOf(elem.key);
+
+      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
+
+      $('#' + buttonId).removeClass('marked');
+    } else {
+      elementsToCopy.push(this.state.fields[index]);
+      $('#' + buttonId).addClass('marked');      
+    }
+
+    this.setState({
+      elementsToCopy
+    });
   }
 
   deleteField(elem, index){
-      let newJSON = {...this.state.jsonData},
-        newFields = [];
+    let newFields = removeArrayElement(this.state.fields, index);
 
-      newFields = [...newJSON.fields.slice(0,index), ...newJSON.fields.slice(index+1)];
-      newJSON.fields = newFields;
-
-      console.log(newFields);
-
-      this.setState({
-        jsonData: newJSON,
-        fields: [...this.state.fields.slice(0,index), ...this.state.fields.slice(index+1)]
-      });
+    this.setState({
+      fields: newFields
+    });
   }
-
 
   render () {
     return (
@@ -64,7 +93,8 @@ class AccordionSection extends Component {
             : "content-text"}
           > 
             {this.state.fields.map((elem, i) => {
-              let fieldId = 'field_' + i;
+              let fieldId = 'field_' + i,
+                  buttonId = "btn_field_" + i;
 
               switch (true) {
                 case elem.clearBefore && elem.clearAfter:
@@ -74,7 +104,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button type="button" className="btn btn-default btn-xs">
+                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -102,7 +132,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button type="button" className="btn btn-default btn-xs">
+                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -130,7 +160,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button type="button" className="btn btn-default btn-xs">
+                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -158,7 +188,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button type="button" className="btn btn-default btn-xs">
+                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">

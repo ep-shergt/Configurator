@@ -40,6 +40,10 @@ ul.dropdown-menu {
 	margin-left: -8px;
 }
 
+.marked {
+	background: lime !important;
+}
+
 
 .drop-node-wrapper {
 	margin-top: 5px;
