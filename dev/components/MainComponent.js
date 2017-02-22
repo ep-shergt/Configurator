@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Textbox from './Textbox';
 import DnDField from './DnDField';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import Configurator from './Configurator'; 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'; 
 import Accordion from './Accordion';
 
 class MainComponent extends Component {

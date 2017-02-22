@@ -26,33 +26,51 @@ class SubAccordion extends Component {
   }
 
   deleteGroupLevelTwo(elem, index) {
-    let subAccordionItems = removeArrayElement(this.state.subAccordionItems, index);
-    
-    this.setState({
-      subAccordionItems
-    });
-  }
-
-  markForCopy(elem, index) {
-    const buttonId = 'btn_group_level_two_mark_' + index;
-    let elementsToCopy = [...this.state.elementsToCopy],
+    const buttonId = 'btn_group_level_two_mark_' + elem.key;
+    let subAccordionItems = removeArrayElement(this.state.subAccordionItems, index),
+        elementsToCopy = [...this.state.elementsToCopy],
         indexForElementToRemove;
 
-    if ($('#' + buttonId).hasClass('marked')) {
+    if (elem.marked) {
+      $('#' + buttonId).removeClass('marked');
+
       indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
         return arrayElement.key;
       }).indexOf(elem.key);
 
       elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
-
-      $('#' + buttonId).removeClass('marked');
-    } else {
-      elementsToCopy.push(this.state.subAccordionItems[index]);
-      $('#' + buttonId).addClass('marked');      
     }
 
     this.setState({
+      subAccordionItems,
       elementsToCopy
+    });
+  }
+
+  markForCopy(elem, index) {
+    const buttonId = 'btn_group_level_two_mark_' + elem.key;
+    let elementsToCopy = [...this.state.elementsToCopy],
+        subAccordionItems = [...this.state.subAccordionItems],
+        indexForElementToRemove;
+
+    if (elem.marked) {
+      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
+        return arrayElement.key;
+      }).indexOf(elem.key);
+
+      subAccordionItems[index].marked = false;
+      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
+      $('#' + buttonId).removeClass('marked');
+
+    } else {
+      subAccordionItems[index].marked = true;      
+      elementsToCopy.push(subAccordionItems[index]);
+      $('#' + buttonId).addClass('marked');
+    }
+
+    this.setState({
+      elementsToCopy,
+      subAccordionItems
     });
   }
 
@@ -65,7 +83,8 @@ class SubAccordion extends Component {
         key: j.key,
         title: j.title,
         content: j.fields,
-        open: false
+        open: false,
+        marked: false
       });
     });
         
@@ -102,10 +121,6 @@ class SubAccordion extends Component {
     });
   }
 
-  componentDidMount() {
-
-  }
-
   render() {
 
     return (
@@ -134,7 +149,7 @@ class SubAccordion extends Component {
             <div>
               <div>
                 {this.state.subAccordionItems.map((elem, j) => {
-                  let buttonId = "btn_group_level_two_mark_" + j;
+                  let buttonId = "btn_group_level_two_mark_" + elem.key;
 
                   return (
                     <div key={j}>

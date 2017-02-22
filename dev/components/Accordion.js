@@ -58,40 +58,68 @@ class Accordion extends Component {
         key: i.key,
         title: i.title,
         content: i.groups,
-        open: false
+        open: false,
+        marked: false
       });
     });
     return accordion;
   }
 
   deleteGroupLevelOne(elem, index) {
-    let accordionItems = removeArrayElement(this.state.accordionItems, index);
-
-    this.setState({
-      accordionItems
-    });
-  }
-
-  markForCopy(elem, index) {
-    const buttonId = 'btn_group_level_one_mark_' + index;
-    let elementsToCopy = [...this.state.elementsToCopy],
+    const buttonId = 'btn_group_level_one_mark_' + elem.key;
+    let accordionItems = removeArrayElement(this.state.accordionItems, index),
+        elementsToCopy = [...this.state.elementsToCopy],
         indexForElementToRemove;
 
-    if ($('#' + buttonId).hasClass('marked')) {
+    if (elem.marked) {
+      $('#' + buttonId).removeClass('marked');
+
       indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
         return arrayElement.key;
       }).indexOf(elem.key);
 
       elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
 
-      $('#' + buttonId).removeClass('marked');
-    } else {
-      elementsToCopy.push(this.state.accordionItems[index]);
-      $('#' + buttonId).addClass('marked');      
     }
 
     this.setState({
+      accordionItems,
       elementsToCopy
+    });
+
+    elementsToCopy.forEach((i) => {
+      const buttonId2 = 'btn_group_level_one_mark_' + i.key;
+      $('#' + buttonId2).removeClass('marked');
+      if (i.marked) {
+        $('#' + buttonId2).addClass('marked');
+      }
+    });
+  }
+
+  markForCopy(elem, index) {
+    const buttonId = 'btn_group_level_one_mark_' + elem.key;
+    let elementsToCopy = [...this.state.elementsToCopy],
+        accordionItems = [...this.state.accordionItems],
+        indexForElementToRemove;
+
+    if (elem.marked) {
+      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
+        return arrayElement.key;
+      }).indexOf(elem.key);
+
+      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
+      accordionItems[index].marked = false;
+      $('#' + buttonId).removeClass('marked');
+
+    } else {
+      accordionItems[index].marked = true;    
+      elementsToCopy.push(accordionItems[index]);
+      $('#' + buttonId).addClass('marked');
+    }
+
+    this.setState({
+      elementsToCopy,
+      accordionItems
     });
   }
 
@@ -103,17 +131,13 @@ class Accordion extends Component {
       accordionItems: newAccordion
     });
   }
-
-  componentDidMount() {
-
-  }
-
+  
   render() {
     return (
       <div className="accordion">
         <div>
           {this.state.accordionItems.map((elem, i) => {
-            let buttonId = "btn_group_level_one_mark_" + i;
+            let buttonId = "btn_group_level_one_mark_" + elem.key;
                
             return (
               <div key={i}>
