@@ -10,27 +10,34 @@ class AccordionSection extends Component {
   constructor(props) {
     super(props);
 
-    this.deleteField = this.deleteField.bind(this);
     this.updateFields = this.updateFields.bind(this);
     this.markForCopy = this.markForCopy.bind(this);
-    this.insertElementsToCopy = this.insertElementsToCopy.bind(this);
+    this.updateMarking = this.updateMarking.bind(this);
+    this.updateFieldsToCopy = this.updateFieldsToCopy.bind(this);
+    this.insertfieldsToCopy = this.insertfieldsToCopy.bind(this);
     this.createNewField = this.createNewField.bind(this);
     this.cutAndShift = this.cutAndShift.bind(this);
-
 
     this.state = {
       jsonData: this.props.store.jsonData.jsonData,
       fields: [],
-      elementsToCopy: []
+      fieldsToCopy: []
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    let newFields = nextProps.elem.content;
+    let newFields = nextProps.elem.content,
+        newFieldsToCopy = nextProps.store.accordion.fieldsToCopy;
+
+    this.updateFieldsToCopy(newFieldsToCopy);    
     this.updateFields(newFields);
+
+    setTimeout(() => {
+      this.updateMarking(newFields);
+    }, 100);
   }
 
-  insertElementsToCopy(elem, index) {
+  insertfieldsToCopy(elem, index) {
 
   }
 
@@ -43,77 +50,92 @@ class AccordionSection extends Component {
   }
 
   updateFields(newFields) {
+    let fields = [...this.state.fields],
+        helpingFields = [];
+
+    newFields.forEach((i) => {
+      i['marked'] = (i.marked !== undefined) ? i.marked : false;
+      helpingFields.push(i);
+    });
+
+    fields = helpingFields;
+
+    this.setState({
+      fields
+    });
+  }
+
+  updateMarking(newFields) {
     let fields = [...this.state.fields];
 
     fields = newFields;
-    this.setState({
-      fields
+
+    fields.forEach((i) => {
+      const buttonId = 'btn_field_' + i.key;
+
+      $('#' + buttonId).removeClass('marked');
+      if (i.marked) {
+        $('#' + buttonId).addClass('marked');
+      } else {
+        $('#' + buttonId).removeClass('marked');
+      }
+    });
+  }
+
+  updateFieldsToCopy(newFieldsToCopy) {
+    let fieldsToCopy = [...this.state.fieldsToCopy];
+
+    fieldsToCopy = newFieldsToCopy;
+
+    this.setState({ 
+      fieldsToCopy
     });
   }
 
   markForCopy(elem, index) {
     const buttonId = 'btn_field_' + elem.key;
-    let elementsToCopy = [...this.state.elementsToCopy],
+    let fieldsToCopy = [...this.state.fieldsToCopy],
         fields = [...this.state.fields],
         indexForElementToRemove;
 
     if (elem.marked) {
-      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
-        return arrayElement.key;
+      indexForElementToRemove = fieldsToCopy.map((key, i) => {
+        return key;
       }).indexOf(elem.key);
 
-      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
+      fieldsToCopy = removeArrayElement(fieldsToCopy, indexForElementToRemove);
       fields[index].marked = false;
       $('#' + buttonId).removeClass('marked');
 
     } else {
       fields[index].marked = true;
-      elementsToCopy.push(fields[index]);
+      fieldsToCopy.push(fields[index].key);
       $('#' + buttonId).addClass('marked');      
     }
 
     this.setState({
-      elementsToCopy,
+      fieldsToCopy,
       fields
-    });
-  }
-
-  deleteField(elem, index){
-    const buttonId = "btn_field_" + elem.key;
-    let fields = removeArrayElement(this.state.fields, index),
-        elementsToCopy = [...this.state.elementsToCopy],
-        indexForElementToRemove;
-
-    if (elem.marked) {
-      $('#' + buttonId).removeClass('marked');
-
-      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
-        return arrayElement.key;
-      }).indexOf(elem.key);
-
-      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
-    }
-
-    this.setState({
-      fields,
-      elementsToCopy
     });
   }
 
   componentWillMount() {
-    let fields = [];
+    let newFields = this.props.elem.content,
+        newFieldsToCopy = this.props.store.accordion.fieldsToCopy;
 
-    this.props.elem.content.forEach((i) => {
-      i['marked'] = false;
-      fields.push(i);
-    });
+    this.updateFieldsToCopy(newFieldsToCopy)
+    this.updateFields(newFields);
 
-    this.setState({
-      fields
-    });
+    setTimeout(() => {
+      this.updateMarking(newFields);
+    }, 100);
   }
 
   render () {
+    let {fields, fieldsToCopy} = this.state;
+    const groupLevelOneKey = this.props.groupLevelOneKey,
+          groupLevelTwoKey = this.props.elem.key;
+
     return (
       <div>
         <div 
@@ -150,7 +172,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
+                            <button onClick={this.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -160,8 +182,8 @@ class AccordionSection extends Component {
                               <ul className="dropdown-menu">
                                 <li><a href="#" onClick={() => this.createNewField(elem, i)}><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element anlegen</a></li>
                                 <li><a href="#" onClick={() => this.cutAndShift(elem, i)}><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden und verschieben</a></li>
-                                <li><a href="#" onClick={() => this.insertElementsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
-                                <li><a href="#" onClick={() => this.deleteField(elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
+                                <li><a href="#" onClick={() => this.insertfieldsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
+                                <li><a href="#" onClick={this.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
                               </ul>
                             </div>
                           </div>
@@ -178,7 +200,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
+                            <button onClick={this.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -188,8 +210,8 @@ class AccordionSection extends Component {
                               <ul className="dropdown-menu">
                                 <li><a href="#" onClick={() => this.createNewField(elem, i)}><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element anlegen</a></li>
                                 <li><a href="#" onClick={() => this.cutAndShift(elem, i)}><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden und verschieben</a></li>
-                                <li><a href="#" onClick={() => this.insertElementsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
-                                <li><a href="#" onClick={() => this.deleteField(elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
+                                <li><a href="#" onClick={() => this.insertfieldsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
+                                <li><a href="#" onClick={this.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
                               </ul>
                             </div>
                           </div>
@@ -206,7 +228,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
+                            <button onClick={this.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -216,8 +238,8 @@ class AccordionSection extends Component {
                               <ul className="dropdown-menu">
                                 <li><a href="#" onClick={() => this.createNewField(elem, i)}><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element anlegen</a></li>
                                 <li><a href="#" onClick={() => this.cutAndShift(elem, i)}><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden und verschieben</a></li>
-                                <li><a href="#" onClick={() => this.insertElementsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
-                                <li><a href="#" onClick={() => this.deleteField(elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
+                                <li><a href="#" onClick={() => this.insertfieldsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
+                                <li><a href="#" onClick={this.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
                               </ul>
                             </div>
                           </div>
@@ -234,7 +256,7 @@ class AccordionSection extends Component {
                         <li className="field-li"><Field field={elem}></Field></li>
                         <li className="field-li">
                           <div className="btn-group-vertical li-div" role="group" aria-label="edit">
-                            <button onClick={() => this.markForCopy(elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
+                            <button onClick={this.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)} id={buttonId} type="button" className="btn btn-default btn-xs">
                               <i className="fa fa-check" aria-hidden="true"></i>
                             </button>
                             <div className="dropdown">
@@ -244,8 +266,8 @@ class AccordionSection extends Component {
                               <ul className="dropdown-menu">
                                 <li><a href="#" onClick={() => this.createNewField(elem, i)}><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element anlegen</a></li>
                                 <li><a href="#" onClick={() => this.cutAndShift(elem, i)}><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden und verschieben</a></li>
-                                <li><a href="#" onClick={() => this.insertElementsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
-                                <li><a href="#" onClick={() => this.deleteField(elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
+                                <li><a href="#" onClick={() => this.insertfieldsToCopy(elem, i)}><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i> Aus Zwischenablage einfügen</a></li>
+                                <li><a href="#" onClick={this.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i)}><i className="fa-margin fa fa-times" aria-hidden="true"></i> Element löschen</a></li>
                               </ul>
                             </div>
                           </div>

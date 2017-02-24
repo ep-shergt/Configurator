@@ -10,68 +10,26 @@ class SubAccordion extends Component {
 
     this.click = this.click.bind(this);
     this.updateSubAccordionItems = this.updateSubAccordionItems.bind(this);
-    this.deleteGroupLevelTwo = this.deleteGroupLevelTwo.bind(this);
-    this.markForCopy = this.markForCopy.bind(this);
+    this.updateGroupsLevelTwoToCopy = this.updateGroupsLevelTwoToCopy.bind(this);
+    this.updateMarking = this.updateMarking.bind(this);
 
     this.state = {
       jsonData: this.props.store.jsonData.jsonData,
       subAccordionItems: [],
-      elementsToCopy: []
+      groupsLevelTwoToCopy: []
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    let newItems = nextProps.elem.content;
+    let newItems = nextProps.elem.content,
+        newGroupsLevelTwoToCopy = nextProps.store.accordion.groupsLevelTwoToCopy;
+
+    this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);    
     this.updateSubAccordionItems(newItems);
-  }
 
-  deleteGroupLevelTwo(elem, index) {
-    const buttonId = 'btn_group_level_two_mark_' + elem.key;
-    let subAccordionItems = removeArrayElement(this.state.subAccordionItems, index),
-        elementsToCopy = [...this.state.elementsToCopy],
-        indexForElementToRemove;
-
-    if (elem.marked) {
-      $('#' + buttonId).removeClass('marked');
-
-      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
-        return arrayElement.key;
-      }).indexOf(elem.key);
-
-      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
-    }
-
-    this.setState({
-      subAccordionItems,
-      elementsToCopy
-    });
-  }
-
-  markForCopy(elem, index) {
-    const buttonId = 'btn_group_level_two_mark_' + elem.key;
-    let elementsToCopy = [...this.state.elementsToCopy],
-        subAccordionItems = [...this.state.subAccordionItems],
-        indexForElementToRemove;
-
-    if (elem.marked) {
-      indexForElementToRemove = elementsToCopy.map((arrayElement, i) => {
-        return arrayElement.key;
-      }).indexOf(elem.key);
-
-      subAccordionItems[index].marked = false;
-      elementsToCopy = removeArrayElement(elementsToCopy, indexForElementToRemove);
-      $('#' + buttonId).removeClass('marked');
-
-    } else {
-      subAccordionItems[index].marked = true;      
-      elementsToCopy.push(subAccordionItems[index]);
-      $('#' + buttonId).addClass('marked');
-    }
-
-    this.setState({
-      elementsToCopy,
-      subAccordionItems
-    });
+    setTimeout(() => {
+      this.updateMarking(newItems)
+    }, 100);
   }
 
   updateSubAccordionItems(newItems) {
@@ -83,8 +41,8 @@ class SubAccordion extends Component {
         key: j.key,
         title: j.title,
         content: j.fields,
-        open: false,
-        marked: false
+        open: (j.open !== undefined) ? j.open : false,
+        marked: (j.marked !== undefined) ? j.marked : false
       });
     });
         
@@ -95,21 +53,43 @@ class SubAccordion extends Component {
     });
   }
 
+  updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy) {
+    let groupsLevelTwoToCopy = [...this.state.groupsLevelTwoToCopy];
+
+    groupsLevelTwoToCopy = newGroupsLevelTwoToCopy;
+
+    this.setState({ 
+      groupsLevelTwoToCopy
+    });
+  }
+
+  updateMarking(newSubAccordionItems) {
+    let subAccordionItems = [...this.state.subAccordionItems];
+
+    subAccordionItems = newSubAccordionItems;
+
+    subAccordionItems.forEach((i) => {
+      const buttonId = 'btn_group_level_two_mark_' + i.key;
+
+      $('#' + buttonId).removeClass('marked');
+      if (i.marked) {
+        $('#' + buttonId).addClass('marked');
+      } else {
+        $('#' + buttonId).removeClass('marked');
+      }
+    });
+  }
+
   componentWillMount() {
-    let subAccordion = [];
+    let subAccordion = this.props.elem.content,
+        newGroupsLevelTwoToCopy = this.props.store.accordion.groupsLevelTwoToCopy;
 
-    this.props.elem.content.forEach((j) => {
-      subAccordion.push({
-        key: j.key,
-        title: j.title,
-        content: j.fields,
-        open: false
-      });
-    });
+    this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
+    this.updateSubAccordionItems(subAccordion);
 
-    this.setState({
-      subAccordionItems: subAccordion
-    });
+    setTimeout(() => {
+      this.updateMarking(subAccordion);
+    }, 100);
   }
 
   click(event, j){ 
@@ -122,6 +102,8 @@ class SubAccordion extends Component {
   }
 
   render() {
+    const groupLevelOneKey = this.props.elem.key;
+    let {subAccordionItems, groupsLevelTwoToCopy} = this.state;
 
     return (
       <div>
@@ -153,10 +135,10 @@ class SubAccordion extends Component {
 
                   return (
                     <div key={j}>
-                      <div className="group-bar-level-one"><AccordionSection {...this.props} click={this.click} groupTwo={j} groupOne={this.props.groupOne} elem={elem}/></div>
+                      <div className="group-bar-level-one"><AccordionSection {...this.props} click={this.click} groupTwo={j} groupOne={this.props.groupOne} groupLevelOneKey={groupLevelOneKey} elem={elem}/></div>
                       <div className="group-buttons-level-one">
                         <div className="btn-group-vertical" role="group" aria-label="edit">
-                          <button id={buttonId} type="button" className="btn btn-default btn-xs" onClick={() => this.markForCopy(elem, j)}>
+                          <button id={buttonId} type="button" className="btn btn-default btn-xs" onClick={this.props.markGroupLevelTwoForCopy.bind(null, subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, elem, j)}>
                             <i className="fa fa-check" aria-hidden="true"></i>
                           </button>
                           <div className="dropdown">
@@ -167,7 +149,7 @@ class SubAccordion extends Component {
                               <li><a href="#"><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element</a></li>
                               <li><a href="#"><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden</a></li>
                               <li><a href="#"><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i>Einfügen</a></li>
-                              <li><a href="#" onClick={() => this.deleteGroupLevelTwo(elem, j)}><i className="fa-margin fa fa-times" aria-hidden="true"></i>Löschen</a></li>
+                              <li><a href="#" onClick={this.props.deleteGroupLevelTwo.bind(null, subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, elem, j)}><i className="fa-margin fa fa-times" aria-hidden="true"></i>Löschen</a></li>
                             </ul>
                           </div>          
                         </div>

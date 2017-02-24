@@ -25,7 +25,7 @@ class Field extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state.field.type);
+    
   }
 
   render() {

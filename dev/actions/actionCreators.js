@@ -1,14 +1,6 @@
-// import JSON
 
-/*export function importJSON(jsonData) {
-	return {
-		type: 'IMPORT_JSON',
-		jsonData
-	}
-}*/
-
-//export JSON
-
+// Changers
+//***************************************************************************
 export function changeJSON(jsonData) {
 	return {
 		type: 'CHANGE_JSON',
@@ -16,24 +8,92 @@ export function changeJSON(jsonData) {
 	}
 }
 
+export function changeFullAccordion(accordion, element, index) {
+	return {
+		type: 'CHANGE_FULL_ACCORDION',
+		accordion,
+		element,
+		index
+	}
+}
+
+//*******************************************************************************
+
+// Markers
+//*************************************************************************************************************************************
+export function markGroupLevelOneForCopy(groupsLevelOneToCopy, element, index) {
+	return {
+		type: 'MARK_GROUP_L1',
+		groupsLevelOneToCopy,
+		element,
+		index
+	}
+}
+
+export function markGroupLevelTwoForCopy(subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, element, index) {
+	return {
+		type: 'MARK_GROUP_L2',
+		subAccordionItems,
+		groupsLevelTwoToCopy,
+		groupLevelOneKey,
+		element,
+		index
+	}
+}
+
+export function markFieldToCopy(fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, element, index) {
+	return {
+		type: 'MARK_FIELD',
+		fields,
+		fieldsToCopy,
+		groupLevelOneKey,
+		groupLevelTwoKey,
+		element,
+		index
+	}
+}
+
+//**************************************************************************************************************************************
+
+// Deleters
+//*************************************************************************************************************************
+export function deleteGroupLevelOne(groupsLevelOneToCopy, element, index) {
+	return {
+		type: 'DELETE_GROUP_L1',
+		groupsLevelOneToCopy,
+		element,
+		index
+	}
+}
+
+export function deleteGroupLevelTwo(subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, element, index) {
+	return {
+		type: 'DELETE_GROUP_L2',
+		subAccordionItems,
+		groupsLevelTwoToCopy,
+		groupLevelOneKey,
+		element,
+		index
+	}
+}
+
+export function deleteField(fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, element, index) {
+	return {
+		type: 'DELETE_FIELD',
+		fields,
+		fieldsToCopy,
+		groupLevelOneKey,
+		groupLevelTwoKey, element,
+		index
+	}
+}
+
+//**************************************************************************************************************************
+
 export function changeGroupNumber(groupNumber) {
 	return {
 		type: 'CHANGE_NUMBER',
 		groupNumber
-	}
-}
-
-export function deleteGroupLevelOne(jsonData) {
-	return {
-		type: 'CHANGE_GROUP_L1',
-		jsonData
-	}
-}
-
-export function deleteGroupLevelTwo(jsonData) {
-	return {
-		type: 'CHANGE_GROUP_L2',
-		jsonData
 	}
 }
 

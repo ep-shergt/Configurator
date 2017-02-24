@@ -56,11 +56,11 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _reactRouter = __webpack_require__(247);
+	var _reactRouter = __webpack_require__(244);
 
 	var _reactRedux = __webpack_require__(205);
 
-	var _store = __webpack_require__(310);
+	var _store = __webpack_require__(307);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -23894,20 +23894,17 @@
 		value: true
 	});
 	exports.changeJSON = changeJSON;
-	exports.changeGroupNumber = changeGroupNumber;
+	exports.changeFullAccordion = changeFullAccordion;
+	exports.markGroupLevelOneForCopy = markGroupLevelOneForCopy;
+	exports.markGroupLevelTwoForCopy = markGroupLevelTwoForCopy;
+	exports.markFieldToCopy = markFieldToCopy;
 	exports.deleteGroupLevelOne = deleteGroupLevelOne;
 	exports.deleteGroupLevelTwo = deleteGroupLevelTwo;
-	// import JSON
+	exports.deleteField = deleteField;
+	exports.changeGroupNumber = changeGroupNumber;
 
-	/*export function importJSON(jsonData) {
-		return {
-			type: 'IMPORT_JSON',
-			jsonData
-		}
-	}*/
-
-	//export JSON
-
+	// Changers
+	//***************************************************************************
 	function changeJSON(jsonData) {
 		return {
 			type: 'CHANGE_JSON',
@@ -23915,24 +23912,92 @@
 		};
 	}
 
+	function changeFullAccordion(accordion, element, index) {
+		return {
+			type: 'CHANGE_FULL_ACCORDION',
+			accordion: accordion,
+			element: element,
+			index: index
+		};
+	}
+
+	//*******************************************************************************
+
+	// Markers
+	//*************************************************************************************************************************************
+	function markGroupLevelOneForCopy(groupsLevelOneToCopy, element, index) {
+		return {
+			type: 'MARK_GROUP_L1',
+			groupsLevelOneToCopy: groupsLevelOneToCopy,
+			element: element,
+			index: index
+		};
+	}
+
+	function markGroupLevelTwoForCopy(subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, element, index) {
+		return {
+			type: 'MARK_GROUP_L2',
+			subAccordionItems: subAccordionItems,
+			groupsLevelTwoToCopy: groupsLevelTwoToCopy,
+			groupLevelOneKey: groupLevelOneKey,
+			element: element,
+			index: index
+		};
+	}
+
+	function markFieldToCopy(fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, element, index) {
+		return {
+			type: 'MARK_FIELD',
+			fields: fields,
+			fieldsToCopy: fieldsToCopy,
+			groupLevelOneKey: groupLevelOneKey,
+			groupLevelTwoKey: groupLevelTwoKey,
+			element: element,
+			index: index
+		};
+	}
+
+	//**************************************************************************************************************************************
+
+	// Deleters
+	//*************************************************************************************************************************
+	function deleteGroupLevelOne(groupsLevelOneToCopy, element, index) {
+		return {
+			type: 'DELETE_GROUP_L1',
+			groupsLevelOneToCopy: groupsLevelOneToCopy,
+			element: element,
+			index: index
+		};
+	}
+
+	function deleteGroupLevelTwo(subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, element, index) {
+		return {
+			type: 'DELETE_GROUP_L2',
+			subAccordionItems: subAccordionItems,
+			groupsLevelTwoToCopy: groupsLevelTwoToCopy,
+			groupLevelOneKey: groupLevelOneKey,
+			element: element,
+			index: index
+		};
+	}
+
+	function deleteField(fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, element, index) {
+		return {
+			type: 'DELETE_FIELD',
+			fields: fields,
+			fieldsToCopy: fieldsToCopy,
+			groupLevelOneKey: groupLevelOneKey,
+			groupLevelTwoKey: groupLevelTwoKey, element: element,
+			index: index
+		};
+	}
+
+	//**************************************************************************************************************************
+
 	function changeGroupNumber(groupNumber) {
 		return {
 			type: 'CHANGE_NUMBER',
 			groupNumber: groupNumber
-		};
-	}
-
-	function deleteGroupLevelOne(jsonData) {
-		return {
-			type: 'CHANGE_GROUP_L1',
-			jsonData: jsonData
-		};
-	}
-
-	function deleteGroupLevelTwo(jsonData) {
-		return {
-			type: 'CHANGE_GROUP_L2',
-			jsonData: jsonData
 		};
 	}
 
@@ -23969,7 +24034,7 @@
 
 	var _reactTabs = __webpack_require__(229);
 
-	var _Accordion = __webpack_require__(242);
+	var _Accordion = __webpack_require__(239);
 
 	var _Accordion2 = _interopRequireDefault(_Accordion);
 
@@ -25480,10 +25545,7 @@
 	});
 
 /***/ },
-/* 239 */,
-/* 240 */,
-/* 241 */,
-/* 242 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25502,11 +25564,11 @@
 
 	var _reactDom = __webpack_require__(32);
 
-	var _SubAccordion = __webpack_require__(243);
+	var _SubAccordion = __webpack_require__(240);
 
 	var _SubAccordion2 = _interopRequireDefault(_SubAccordion);
 
-	var _helpers = __webpack_require__(246);
+	var _helpers = __webpack_require__(243);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25529,15 +25591,14 @@
 	    var _this = _possibleConstructorReturn(this, (Accordion.__proto__ || Object.getPrototypeOf(Accordion)).call(this, props));
 
 	    _this.click = _this.click.bind(_this);
-	    _this.deleteGroupLevelOne = _this.deleteGroupLevelOne.bind(_this);
-	    _this.setAccordionItems = _this.setAccordionItems.bind(_this);
-	    _this.markForCopy = _this.markForCopy.bind(_this);
+	    _this.updateMarking = _this.updateMarking.bind(_this);
+	    _this.updateAccordion = _this.updateAccordion.bind(_this);
+	    _this.updateGroupsLevelOneToCopy = _this.updateGroupsLevelOneToCopy.bind(_this);
 
 	    _this.state = {
 	      jsonData: _this.props.store.jsonData.jsonData,
-	      accordionItems: [],
-	      fields: _this.props.store.jsonData.jsonData.fields,
-	      elementsToCopy: []
+	      accordion: [],
+	      groupsLevelOneToCopy: []
 	    };
 	    return _this;
 	  }
@@ -25545,125 +25606,90 @@
 	  _createClass(Accordion, [{
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
-	      var accordion = this.setAccordionItems();
-
-	      this.setState({
-	        accordionItems: accordion
-	      });
-	    }
-	  }, {
-	    key: 'setAccordionItems',
-	    value: function setAccordionItems() {
 	      var _this2 = this;
 
-	      var accordion = [],
-	          groups = this.state.jsonData.groups;
+	      var newAccordion = this.props.store.accordion.accordion,
+	          newGroupsLevelOneToCopy = this.props.store.accordion.groupsLevelOneToCopy;
 
-	      groups.forEach(function (group) {
-	        if (group.groups[0] !== undefined) {
-	          (function () {
-	            var groupLevelOneKey = group.key;
+	      this.updateAccordion(newAccordion);
+	      this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
 
-	            group.groups.forEach(function (i) {
-	              var groupLevelTwoKey = i.key,
-	                  fieldGroupKey = groupLevelOneKey + '|' + groupLevelTwoKey,
-	                  fieldsPerGroup = [];
-
-	              _this2.state.fields.forEach(function (field) {
-	                if (field.group === fieldGroupKey) {
-	                  fieldsPerGroup.push(field);
-	                }
-	              });
-
-	              i['fields'] = fieldsPerGroup;
-	            });
-	          })();
-	        }
-	      });
-
-	      groups.forEach(function (i) {
-	        accordion.push({
-	          key: i.key,
-	          title: i.title,
-	          content: i.groups,
-	          open: false,
-	          marked: false
-	        });
-	      });
-	      return accordion;
-	    }
-	  }, {
-	    key: 'deleteGroupLevelOne',
-	    value: function deleteGroupLevelOne(elem, index) {
-	      var buttonId = 'btn_group_level_one_mark_' + elem.key;
-	      var accordionItems = (0, _helpers.removeArrayElement)(this.state.accordionItems, index),
-	          elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
-	          indexForElementToRemove = void 0;
-
-	      if (elem.marked) {
-	        $('#' + buttonId).removeClass('marked');
-
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
-	        }).indexOf(elem.key);
-
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
-	      }
-
-	      this.setState({
-	        accordionItems: accordionItems,
-	        elementsToCopy: elementsToCopy
-	      });
-
-	      elementsToCopy.forEach(function (i) {
-	        var buttonId2 = 'btn_group_level_one_mark_' + i.key;
-	        $('#' + buttonId2).removeClass('marked');
-	        if (i.marked) {
-	          $('#' + buttonId2).addClass('marked');
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'markForCopy',
-	    value: function markForCopy(elem, index) {
-	      var buttonId = 'btn_group_level_one_mark_' + elem.key;
-	      var elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
-	          accordionItems = [].concat(_toConsumableArray(this.state.accordionItems)),
-	          indexForElementToRemove = void 0;
-
-	      if (elem.marked) {
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
-	        }).indexOf(elem.key);
-
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
-	        accordionItems[index].marked = false;
-	        $('#' + buttonId).removeClass('marked');
-	      } else {
-	        accordionItems[index].marked = true;
-	        elementsToCopy.push(accordionItems[index]);
-	        $('#' + buttonId).addClass('marked');
-	      }
-
-	      this.setState({
-	        elementsToCopy: elementsToCopy,
-	        accordionItems: accordionItems
-	      });
+	      setTimeout(function () {
+	        _this2.updateMarking(newAccordion);
+	      }, 100);
 	    }
 	  }, {
 	    key: 'click',
 	    value: function click(event, i) {
-	      var newAccordion = this.state.accordionItems.slice();
+	      var newAccordion = this.state.accordion.slice();
 
 	      newAccordion[i].open = !newAccordion[i].open;
 	      this.setState({
-	        accordionItems: newAccordion
+	        accordion: newAccordion
+	      });
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      var _this3 = this;
+
+	      var newAccordion = nextProps.store.accordion.accordion,
+	          newGroupsLevelOneToCopy = nextProps.store.accordion.groupsLevelOneToCopy;
+
+	      this.updateAccordion(newAccordion);
+	      this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
+
+	      setTimeout(function () {
+	        _this3.updateMarking(newAccordion);
+	      }, 100);
+	    }
+	  }, {
+	    key: 'updateAccordion',
+	    value: function updateAccordion(newAccordion) {
+	      var accordion = [].concat(_toConsumableArray(this.state.accordion));
+
+	      accordion = newAccordion;
+
+	      this.setState({
+	        accordion: accordion
+	      });
+	    }
+	  }, {
+	    key: 'updateGroupsLevelOneToCopy',
+	    value: function updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy) {
+	      var groupsLevelOneToCopy = [].concat(_toConsumableArray(this.state.groupsLevelOneToCopy));
+
+	      groupsLevelOneToCopy = newGroupsLevelOneToCopy;
+
+	      this.setState({
+	        groupsLevelOneToCopy: groupsLevelOneToCopy
+	      });
+	    }
+	  }, {
+	    key: 'updateMarking',
+	    value: function updateMarking(newAccordion) {
+	      var accordion = [].concat(_toConsumableArray(this.state.accordion));
+
+	      accordion = newAccordion;
+
+	      accordion.forEach(function (i) {
+	        var buttonId = 'btn_group_level_one_mark_' + i.key;
+
+	        $('#' + buttonId).removeClass('marked');
+	        if (i.marked) {
+	          $('#' + buttonId).addClass('marked');
+	        } else {
+	          $('#' + buttonId).removeClass('marked');
+	        }
 	      });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this3 = this;
+	      var _this4 = this;
+
+	      var groupsLevelOneToCopy = this.state.groupsLevelOneToCopy;
+
 
 	      return _react2.default.createElement(
 	        'div',
@@ -25671,7 +25697,7 @@
 	        _react2.default.createElement(
 	          'div',
 	          null,
-	          this.state.accordionItems.map(function (elem, i) {
+	          this.state.accordion.map(function (elem, i) {
 	            var _React$createElement;
 
 	            var buttonId = "btn_group_level_one_mark_" + elem.key;
@@ -25682,7 +25708,7 @@
 	              _react2.default.createElement(
 	                'div',
 	                { className: 'group-bar-level-one' },
-	                _react2.default.createElement(_SubAccordion2.default, _extends({}, _this3.props, { click: _this3.click, groupOne: i, elem: elem }))
+	                _react2.default.createElement(_SubAccordion2.default, _extends({}, _this4.props, { click: _this4.click, groupOne: i, elem: elem }))
 	              ),
 	              _react2.default.createElement(
 	                'div',
@@ -25692,9 +25718,7 @@
 	                  { className: 'btn-group-vertical', role: 'group', 'aria-label': 'edit' },
 	                  _react2.default.createElement(
 	                    'button',
-	                    { id: buttonId, type: 'button', className: 'btn btn-default btn-xs', onClick: function onClick() {
-	                        return _this3.markForCopy(elem, i);
-	                      } },
+	                    { id: buttonId, type: 'button', className: 'btn btn-default btn-xs', onClick: _this4.props.markGroupLevelOneForCopy.bind(null, groupsLevelOneToCopy, elem, i) },
 	                    _react2.default.createElement('i', { className: 'fa fa-check', 'aria-hidden': 'true' })
 	                  ),
 	                  _react2.default.createElement(
@@ -25743,9 +25767,7 @@
 	                        null,
 	                        _react2.default.createElement(
 	                          'a',
-	                          { href: '#', onClick: function onClick() {
-	                              return _this3.deleteGroupLevelOne(elem, i);
-	                            } },
+	                          { href: '#', onClick: _this4.props.deleteGroupLevelOne.bind(null, groupsLevelOneToCopy, elem, i) },
 	                          _react2.default.createElement('i', { className: 'fa-margin fa fa-times', 'aria-hidden': 'true' }),
 	                          'L\xF6schen'
 	                        )
@@ -25767,7 +25789,7 @@
 	exports.default = Accordion;
 
 /***/ },
-/* 243 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25786,11 +25808,11 @@
 
 	var _reactDom = __webpack_require__(32);
 
-	var _AccordionSection = __webpack_require__(244);
+	var _AccordionSection = __webpack_require__(241);
 
 	var _AccordionSection2 = _interopRequireDefault(_AccordionSection);
 
-	var _helpers = __webpack_require__(246);
+	var _helpers = __webpack_require__(243);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25814,13 +25836,13 @@
 
 	    _this.click = _this.click.bind(_this);
 	    _this.updateSubAccordionItems = _this.updateSubAccordionItems.bind(_this);
-	    _this.deleteGroupLevelTwo = _this.deleteGroupLevelTwo.bind(_this);
-	    _this.markForCopy = _this.markForCopy.bind(_this);
+	    _this.updateGroupsLevelTwoToCopy = _this.updateGroupsLevelTwoToCopy.bind(_this);
+	    _this.updateMarking = _this.updateMarking.bind(_this);
 
 	    _this.state = {
 	      jsonData: _this.props.store.jsonData.jsonData,
 	      subAccordionItems: [],
-	      elementsToCopy: []
+	      groupsLevelTwoToCopy: []
 	    };
 	    return _this;
 	  }
@@ -25828,58 +25850,17 @@
 	  _createClass(SubAccordion, [{
 	    key: 'componentWillReceiveProps',
 	    value: function componentWillReceiveProps(nextProps) {
-	      var newItems = nextProps.elem.content;
+	      var _this2 = this;
+
+	      var newItems = nextProps.elem.content,
+	          newGroupsLevelTwoToCopy = nextProps.store.accordion.groupsLevelTwoToCopy;
+
+	      this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
 	      this.updateSubAccordionItems(newItems);
-	    }
-	  }, {
-	    key: 'deleteGroupLevelTwo',
-	    value: function deleteGroupLevelTwo(elem, index) {
-	      var buttonId = 'btn_group_level_two_mark_' + elem.key;
-	      var subAccordionItems = (0, _helpers.removeArrayElement)(this.state.subAccordionItems, index),
-	          elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
-	          indexForElementToRemove = void 0;
 
-	      if (elem.marked) {
-	        $('#' + buttonId).removeClass('marked');
-
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
-	        }).indexOf(elem.key);
-
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
-	      }
-
-	      this.setState({
-	        subAccordionItems: subAccordionItems,
-	        elementsToCopy: elementsToCopy
-	      });
-	    }
-	  }, {
-	    key: 'markForCopy',
-	    value: function markForCopy(elem, index) {
-	      var buttonId = 'btn_group_level_two_mark_' + elem.key;
-	      var elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
-	          subAccordionItems = [].concat(_toConsumableArray(this.state.subAccordionItems)),
-	          indexForElementToRemove = void 0;
-
-	      if (elem.marked) {
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
-	        }).indexOf(elem.key);
-
-	        subAccordionItems[index].marked = false;
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
-	        $('#' + buttonId).removeClass('marked');
-	      } else {
-	        subAccordionItems[index].marked = true;
-	        elementsToCopy.push(subAccordionItems[index]);
-	        $('#' + buttonId).addClass('marked');
-	      }
-
-	      this.setState({
-	        elementsToCopy: elementsToCopy,
-	        subAccordionItems: subAccordionItems
-	      });
+	      setTimeout(function () {
+	        _this2.updateMarking(newItems);
+	      }, 100);
 	    }
 	  }, {
 	    key: 'updateSubAccordionItems',
@@ -25892,8 +25873,8 @@
 	          key: j.key,
 	          title: j.title,
 	          content: j.fields,
-	          open: false,
-	          marked: false
+	          open: j.open !== undefined ? j.open : false,
+	          marked: j.marked !== undefined ? j.marked : false
 	        });
 	      });
 
@@ -25904,22 +25885,48 @@
 	      });
 	    }
 	  }, {
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      var subAccordion = [];
+	    key: 'updateGroupsLevelTwoToCopy',
+	    value: function updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy) {
+	      var groupsLevelTwoToCopy = [].concat(_toConsumableArray(this.state.groupsLevelTwoToCopy));
 
-	      this.props.elem.content.forEach(function (j) {
-	        subAccordion.push({
-	          key: j.key,
-	          title: j.title,
-	          content: j.fields,
-	          open: false
-	        });
-	      });
+	      groupsLevelTwoToCopy = newGroupsLevelTwoToCopy;
 
 	      this.setState({
-	        subAccordionItems: subAccordion
+	        groupsLevelTwoToCopy: groupsLevelTwoToCopy
 	      });
+	    }
+	  }, {
+	    key: 'updateMarking',
+	    value: function updateMarking(newSubAccordionItems) {
+	      var subAccordionItems = [].concat(_toConsumableArray(this.state.subAccordionItems));
+
+	      subAccordionItems = newSubAccordionItems;
+
+	      subAccordionItems.forEach(function (i) {
+	        var buttonId = 'btn_group_level_two_mark_' + i.key;
+
+	        $('#' + buttonId).removeClass('marked');
+	        if (i.marked) {
+	          $('#' + buttonId).addClass('marked');
+	        } else {
+	          $('#' + buttonId).removeClass('marked');
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      var _this3 = this;
+
+	      var subAccordion = this.props.elem.content,
+	          newGroupsLevelTwoToCopy = this.props.store.accordion.groupsLevelTwoToCopy;
+
+	      this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
+	      this.updateSubAccordionItems(subAccordion);
+
+	      setTimeout(function () {
+	        _this3.updateMarking(subAccordion);
+	      }, 100);
 	    }
 	  }, {
 	    key: 'click',
@@ -25934,7 +25941,13 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this4 = this;
+
+	      var groupLevelOneKey = this.props.elem.key;
+	      var _state = this.state,
+	          subAccordionItems = _state.subAccordionItems,
+	          groupsLevelTwoToCopy = _state.groupsLevelTwoToCopy;
+
 
 	      return _react2.default.createElement(
 	        'div',
@@ -25944,7 +25957,7 @@
 	          {
 	            className: 'title',
 	            onClick: function onClick(e) {
-	              return _this2.props.click(e, _this2.props.groupOne);
+	              return _this4.props.click(e, _this4.props.groupOne);
 	            }
 	          },
 	          _react2.default.createElement(
@@ -25983,7 +25996,7 @@
 	                    _react2.default.createElement(
 	                      'div',
 	                      { className: 'group-bar-level-one' },
-	                      _react2.default.createElement(_AccordionSection2.default, _extends({}, _this2.props, { click: _this2.click, groupTwo: j, groupOne: _this2.props.groupOne, elem: elem }))
+	                      _react2.default.createElement(_AccordionSection2.default, _extends({}, _this4.props, { click: _this4.click, groupTwo: j, groupOne: _this4.props.groupOne, groupLevelOneKey: groupLevelOneKey, elem: elem }))
 	                    ),
 	                    _react2.default.createElement(
 	                      'div',
@@ -25993,9 +26006,7 @@
 	                        { className: 'btn-group-vertical', role: 'group', 'aria-label': 'edit' },
 	                        _react2.default.createElement(
 	                          'button',
-	                          { id: buttonId, type: 'button', className: 'btn btn-default btn-xs', onClick: function onClick() {
-	                              return _this2.markForCopy(elem, j);
-	                            } },
+	                          { id: buttonId, type: 'button', className: 'btn btn-default btn-xs', onClick: _this4.props.markGroupLevelTwoForCopy.bind(null, subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, elem, j) },
 	                          _react2.default.createElement('i', { className: 'fa fa-check', 'aria-hidden': 'true' })
 	                        ),
 	                        _react2.default.createElement(
@@ -26044,9 +26055,7 @@
 	                              null,
 	                              _react2.default.createElement(
 	                                'a',
-	                                { href: '#', onClick: function onClick() {
-	                                    return _this2.deleteGroupLevelTwo(elem, j);
-	                                  } },
+	                                { href: '#', onClick: _this4.props.deleteGroupLevelTwo.bind(null, subAccordionItems, groupsLevelTwoToCopy, groupLevelOneKey, elem, j) },
 	                                _react2.default.createElement('i', { className: 'fa-margin fa fa-times', 'aria-hidden': 'true' }),
 	                                'L\xF6schen'
 	                              )
@@ -26071,7 +26080,7 @@
 	exports.default = SubAccordion;
 
 /***/ },
-/* 244 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26088,11 +26097,11 @@
 
 	var _reactDom = __webpack_require__(32);
 
-	var _Field = __webpack_require__(245);
+	var _Field = __webpack_require__(242);
 
 	var _Field2 = _interopRequireDefault(_Field);
 
-	var _helpers = __webpack_require__(246);
+	var _helpers = __webpack_require__(243);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26116,17 +26125,18 @@
 
 	    var _this = _possibleConstructorReturn(this, (AccordionSection.__proto__ || Object.getPrototypeOf(AccordionSection)).call(this, props));
 
-	    _this.deleteField = _this.deleteField.bind(_this);
 	    _this.updateFields = _this.updateFields.bind(_this);
 	    _this.markForCopy = _this.markForCopy.bind(_this);
-	    _this.insertElementsToCopy = _this.insertElementsToCopy.bind(_this);
+	    _this.updateMarking = _this.updateMarking.bind(_this);
+	    _this.updateFieldsToCopy = _this.updateFieldsToCopy.bind(_this);
+	    _this.insertfieldsToCopy = _this.insertfieldsToCopy.bind(_this);
 	    _this.createNewField = _this.createNewField.bind(_this);
 	    _this.cutAndShift = _this.cutAndShift.bind(_this);
 
 	    _this.state = {
 	      jsonData: _this.props.store.jsonData.jsonData,
 	      fields: [],
-	      elementsToCopy: []
+	      fieldsToCopy: []
 	    };
 	    return _this;
 	  }
@@ -26134,12 +26144,21 @@
 	  _createClass(AccordionSection, [{
 	    key: "componentWillReceiveProps",
 	    value: function componentWillReceiveProps(nextProps) {
-	      var newFields = nextProps.elem.content;
+	      var _this2 = this;
+
+	      var newFields = nextProps.elem.content,
+	          newFieldsToCopy = nextProps.store.accordion.fieldsToCopy;
+
+	      this.updateFieldsToCopy(newFieldsToCopy);
 	      this.updateFields(newFields);
+
+	      setTimeout(function () {
+	        _this2.updateMarking(newFields);
+	      }, 100);
 	    }
 	  }, {
-	    key: "insertElementsToCopy",
-	    value: function insertElementsToCopy(elem, index) {}
+	    key: "insertfieldsToCopy",
+	    value: function insertfieldsToCopy(elem, index) {}
 	  }, {
 	    key: "createNewField",
 	    value: function createNewField(elem, index) {}
@@ -26149,81 +26168,102 @@
 	  }, {
 	    key: "updateFields",
 	    value: function updateFields(newFields) {
+	      var fields = [].concat(_toConsumableArray(this.state.fields)),
+	          helpingFields = [];
+
+	      newFields.forEach(function (i) {
+	        i['marked'] = i.marked !== undefined ? i.marked : false;
+	        helpingFields.push(i);
+	      });
+
+	      fields = helpingFields;
+
+	      this.setState({
+	        fields: fields
+	      });
+	    }
+	  }, {
+	    key: "updateMarking",
+	    value: function updateMarking(newFields) {
 	      var fields = [].concat(_toConsumableArray(this.state.fields));
 
 	      fields = newFields;
+
+	      fields.forEach(function (i) {
+	        var buttonId = 'btn_field_' + i.key;
+
+	        $('#' + buttonId).removeClass('marked');
+	        if (i.marked) {
+	          $('#' + buttonId).addClass('marked');
+	        } else {
+	          $('#' + buttonId).removeClass('marked');
+	        }
+	      });
+	    }
+	  }, {
+	    key: "updateFieldsToCopy",
+	    value: function updateFieldsToCopy(newFieldsToCopy) {
+	      var fieldsToCopy = [].concat(_toConsumableArray(this.state.fieldsToCopy));
+
+	      fieldsToCopy = newFieldsToCopy;
+
 	      this.setState({
-	        fields: fields
+	        fieldsToCopy: fieldsToCopy
 	      });
 	    }
 	  }, {
 	    key: "markForCopy",
 	    value: function markForCopy(elem, index) {
 	      var buttonId = 'btn_field_' + elem.key;
-	      var elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
+	      var fieldsToCopy = [].concat(_toConsumableArray(this.state.fieldsToCopy)),
 	          fields = [].concat(_toConsumableArray(this.state.fields)),
 	          indexForElementToRemove = void 0;
 
 	      if (elem.marked) {
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
+	        indexForElementToRemove = fieldsToCopy.map(function (key, i) {
+	          return key;
 	        }).indexOf(elem.key);
 
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
+	        fieldsToCopy = (0, _helpers.removeArrayElement)(fieldsToCopy, indexForElementToRemove);
 	        fields[index].marked = false;
 	        $('#' + buttonId).removeClass('marked');
 	      } else {
 	        fields[index].marked = true;
-	        elementsToCopy.push(fields[index]);
+	        fieldsToCopy.push(fields[index].key);
 	        $('#' + buttonId).addClass('marked');
 	      }
 
 	      this.setState({
-	        elementsToCopy: elementsToCopy,
+	        fieldsToCopy: fieldsToCopy,
 	        fields: fields
-	      });
-	    }
-	  }, {
-	    key: "deleteField",
-	    value: function deleteField(elem, index) {
-	      var buttonId = "btn_field_" + elem.key;
-	      var fields = (0, _helpers.removeArrayElement)(this.state.fields, index),
-	          elementsToCopy = [].concat(_toConsumableArray(this.state.elementsToCopy)),
-	          indexForElementToRemove = void 0;
-
-	      if (elem.marked) {
-	        $('#' + buttonId).removeClass('marked');
-
-	        indexForElementToRemove = elementsToCopy.map(function (arrayElement, i) {
-	          return arrayElement.key;
-	        }).indexOf(elem.key);
-
-	        elementsToCopy = (0, _helpers.removeArrayElement)(elementsToCopy, indexForElementToRemove);
-	      }
-
-	      this.setState({
-	        fields: fields,
-	        elementsToCopy: elementsToCopy
 	      });
 	    }
 	  }, {
 	    key: "componentWillMount",
 	    value: function componentWillMount() {
-	      var fields = [];
+	      var _this3 = this;
 
-	      this.props.elem.content.forEach(function (i) {
-	        i['marked'] = false;
-	        fields.push(i);
-	      });
+	      var newFields = this.props.elem.content,
+	          newFieldsToCopy = this.props.store.accordion.fieldsToCopy;
 
-	      this.setState({
-	        fields: fields
-	      });
+	      this.updateFieldsToCopy(newFieldsToCopy);
+	      this.updateFields(newFields);
+
+	      setTimeout(function () {
+	        _this3.updateMarking(newFields);
+	      }, 100);
 	    }
 	  }, {
 	    key: "render",
 	    value: function render() {
-	      var _this2 = this;
+	      var _this4 = this;
+
+	      var _state = this.state,
+	          fields = _state.fields,
+	          fieldsToCopy = _state.fieldsToCopy;
+
+	      var groupLevelOneKey = this.props.groupLevelOneKey,
+	          groupLevelTwoKey = this.props.elem.key;
 
 	      return _react2.default.createElement(
 	        "div",
@@ -26233,7 +26273,7 @@
 	          {
 	            className: "title",
 	            onClick: function onClick(e) {
-	              return _this2.props.click(e, _this2.props.groupTwo);
+	              return _this4.props.click(e, _this4.props.groupTwo);
 	            }
 	          },
 	          _react2.default.createElement(
@@ -26283,9 +26323,7 @@
 	                          { className: "btn-group-vertical li-div", role: "group", "aria-label": "edit" },
 	                          _react2.default.createElement(
 	                            "button",
-	                            { onClick: function onClick() {
-	                                return _this2.markForCopy(elem, i);
-	                              }, id: buttonId, type: "button", className: "btn btn-default btn-xs" },
+	                            { onClick: _this4.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i), id: buttonId, type: "button", className: "btn btn-default btn-xs" },
 	                            _react2.default.createElement("i", { className: "fa fa-check", "aria-hidden": "true" })
 	                          ),
 	                          _react2.default.createElement(
@@ -26305,7 +26343,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.createNewField(elem, i);
+	                                      return _this4.createNewField(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-plus", "aria-hidden": "true" }),
 	                                  " Neues Element anlegen"
@@ -26317,7 +26355,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.cutAndShift(elem, i);
+	                                      return _this4.cutAndShift(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-scissors", "aria-hidden": "true" }),
 	                                  " Ausschneiden und verschieben"
@@ -26329,7 +26367,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.insertElementsToCopy(elem, i);
+	                                      return _this4.insertfieldsToCopy(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-arrow-down", "aria-hidden": "true" }),
 	                                  " Aus Zwischenablage einf\xFCgen"
@@ -26340,9 +26378,7 @@
 	                                null,
 	                                _react2.default.createElement(
 	                                  "a",
-	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.deleteField(elem, i);
-	                                    } },
+	                                  { href: "#", onClick: _this4.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i) },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-times", "aria-hidden": "true" }),
 	                                  " Element l\xF6schen"
 	                                )
@@ -26375,9 +26411,7 @@
 	                          { className: "btn-group-vertical li-div", role: "group", "aria-label": "edit" },
 	                          _react2.default.createElement(
 	                            "button",
-	                            { onClick: function onClick() {
-	                                return _this2.markForCopy(elem, i);
-	                              }, id: buttonId, type: "button", className: "btn btn-default btn-xs" },
+	                            { onClick: _this4.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i), id: buttonId, type: "button", className: "btn btn-default btn-xs" },
 	                            _react2.default.createElement("i", { className: "fa fa-check", "aria-hidden": "true" })
 	                          ),
 	                          _react2.default.createElement(
@@ -26397,7 +26431,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.createNewField(elem, i);
+	                                      return _this4.createNewField(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-plus", "aria-hidden": "true" }),
 	                                  " Neues Element anlegen"
@@ -26409,7 +26443,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.cutAndShift(elem, i);
+	                                      return _this4.cutAndShift(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-scissors", "aria-hidden": "true" }),
 	                                  " Ausschneiden und verschieben"
@@ -26421,7 +26455,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.insertElementsToCopy(elem, i);
+	                                      return _this4.insertfieldsToCopy(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-arrow-down", "aria-hidden": "true" }),
 	                                  " Aus Zwischenablage einf\xFCgen"
@@ -26432,9 +26466,7 @@
 	                                null,
 	                                _react2.default.createElement(
 	                                  "a",
-	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.deleteField(elem, i);
-	                                    } },
+	                                  { href: "#", onClick: _this4.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i) },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-times", "aria-hidden": "true" }),
 	                                  " Element l\xF6schen"
 	                                )
@@ -26467,9 +26499,7 @@
 	                          { className: "btn-group-vertical li-div", role: "group", "aria-label": "edit" },
 	                          _react2.default.createElement(
 	                            "button",
-	                            { onClick: function onClick() {
-	                                return _this2.markForCopy(elem, i);
-	                              }, id: buttonId, type: "button", className: "btn btn-default btn-xs" },
+	                            { onClick: _this4.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i), id: buttonId, type: "button", className: "btn btn-default btn-xs" },
 	                            _react2.default.createElement("i", { className: "fa fa-check", "aria-hidden": "true" })
 	                          ),
 	                          _react2.default.createElement(
@@ -26489,7 +26519,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.createNewField(elem, i);
+	                                      return _this4.createNewField(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-plus", "aria-hidden": "true" }),
 	                                  " Neues Element anlegen"
@@ -26501,7 +26531,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.cutAndShift(elem, i);
+	                                      return _this4.cutAndShift(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-scissors", "aria-hidden": "true" }),
 	                                  " Ausschneiden und verschieben"
@@ -26513,7 +26543,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.insertElementsToCopy(elem, i);
+	                                      return _this4.insertfieldsToCopy(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-arrow-down", "aria-hidden": "true" }),
 	                                  " Aus Zwischenablage einf\xFCgen"
@@ -26524,9 +26554,7 @@
 	                                null,
 	                                _react2.default.createElement(
 	                                  "a",
-	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.deleteField(elem, i);
-	                                    } },
+	                                  { href: "#", onClick: _this4.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i) },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-times", "aria-hidden": "true" }),
 	                                  " Element l\xF6schen"
 	                                )
@@ -26559,9 +26587,7 @@
 	                          { className: "btn-group-vertical li-div", role: "group", "aria-label": "edit" },
 	                          _react2.default.createElement(
 	                            "button",
-	                            { onClick: function onClick() {
-	                                return _this2.markForCopy(elem, i);
-	                              }, id: buttonId, type: "button", className: "btn btn-default btn-xs" },
+	                            { onClick: _this4.props.markFieldToCopy.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i), id: buttonId, type: "button", className: "btn btn-default btn-xs" },
 	                            _react2.default.createElement("i", { className: "fa fa-check", "aria-hidden": "true" })
 	                          ),
 	                          _react2.default.createElement(
@@ -26581,7 +26607,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.createNewField(elem, i);
+	                                      return _this4.createNewField(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-plus", "aria-hidden": "true" }),
 	                                  " Neues Element anlegen"
@@ -26593,7 +26619,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.cutAndShift(elem, i);
+	                                      return _this4.cutAndShift(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-scissors", "aria-hidden": "true" }),
 	                                  " Ausschneiden und verschieben"
@@ -26605,7 +26631,7 @@
 	                                _react2.default.createElement(
 	                                  "a",
 	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.insertElementsToCopy(elem, i);
+	                                      return _this4.insertfieldsToCopy(elem, i);
 	                                    } },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-arrow-down", "aria-hidden": "true" }),
 	                                  " Aus Zwischenablage einf\xFCgen"
@@ -26616,9 +26642,7 @@
 	                                null,
 	                                _react2.default.createElement(
 	                                  "a",
-	                                  { href: "#", onClick: function onClick() {
-	                                      return _this2.deleteField(elem, i);
-	                                    } },
+	                                  { href: "#", onClick: _this4.props.deleteField.bind(null, fields, fieldsToCopy, groupLevelOneKey, groupLevelTwoKey, elem, i) },
 	                                  _react2.default.createElement("i", { className: "fa-margin fa fa-times", "aria-hidden": "true" }),
 	                                  " Element l\xF6schen"
 	                                )
@@ -26644,7 +26668,7 @@
 	exports.default = AccordionSection;
 
 /***/ },
-/* 245 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26702,9 +26726,7 @@
 	    }
 	  }, {
 	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      console.log(this.state.field.type);
-	    }
+	    value: function componentDidMount() {}
 	  }, {
 	    key: 'render',
 	    value: function render() {
@@ -26921,31 +26943,78 @@
 	exports.default = Field;
 
 /***/ },
-/* 246 */
+/* 243 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
 	exports.extractContent = extractContent;
 	exports.removeArrayElement = removeArrayElement;
+	exports.setAccordionItems = setAccordionItems;
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function extractContent(html) {
-		return new DOMParser().parseFromString(html, "text/html").documentElement.textContent;
+	  return new DOMParser().parseFromString(html, "text/html").documentElement.textContent;
 	}
 
 	function removeArrayElement(oldArray, index) {
-		var newArray = [].concat(_toConsumableArray(oldArray.slice(0, index)), _toConsumableArray(oldArray.slice(index + 1)));
+	  var newArray = [].concat(_toConsumableArray(oldArray.slice(0, index)), _toConsumableArray(oldArray.slice(index + 1)));
 
-		return newArray;
+	  return newArray;
+	}
+
+	function setAccordionItems(jsonData) {
+	  var accordion = [],
+	      groups = jsonData.groups;
+
+	  groups.forEach(function (group) {
+	    if (group.groups[0] !== undefined) {
+	      (function () {
+	        var groupLevelOneKey = group.key;
+
+	        group.groups.forEach(function (i) {
+	          var groupLevelTwoKey = i.key,
+	              fieldGroupKey = groupLevelOneKey + '|' + groupLevelTwoKey,
+	              fieldsPerGroup = [];
+
+	          jsonData.fields.forEach(function (field) {
+	            if (field.group === fieldGroupKey) {
+	              fieldsPerGroup.push(field);
+	            }
+	          });
+
+	          i['fields'] = fieldsPerGroup;
+	        });
+	      })();
+	    }
+	  });
+
+	  groups.forEach(function (i) {
+	    accordion.push({
+	      key: i.key,
+	      title: i.title,
+	      content: i.groups,
+	      open: false,
+	      marked: false
+	    });
+	  });
+
+	  /* accordion.forEach((i) => {
+	  		i.content.forEach((j) => {
+	  			j['marked'] = false;
+	  			j['open'] = false;
+	  		});
+	  	});*/
+
+	  return accordion;
 	}
 
 /***/ },
-/* 247 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26953,7 +27022,7 @@
 	exports.__esModule = true;
 	exports.createMemoryHistory = exports.hashHistory = exports.browserHistory = exports.applyRouterMiddleware = exports.formatPattern = exports.useRouterHistory = exports.match = exports.routerShape = exports.locationShape = exports.PropTypes = exports.RoutingContext = exports.RouterContext = exports.createRoutes = exports.useRoutes = exports.RouteContext = exports.Lifecycle = exports.History = exports.Route = exports.Redirect = exports.IndexRoute = exports.IndexRedirect = exports.withRouter = exports.IndexLink = exports.Link = exports.Router = undefined;
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
 	Object.defineProperty(exports, 'createRoutes', {
 	  enumerable: true,
@@ -26962,7 +27031,7 @@
 	  }
 	});
 
-	var _PropTypes2 = __webpack_require__(249);
+	var _PropTypes2 = __webpack_require__(246);
 
 	Object.defineProperty(exports, 'locationShape', {
 	  enumerable: true,
@@ -26977,7 +27046,7 @@
 	  }
 	});
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
 	Object.defineProperty(exports, 'formatPattern', {
 	  enumerable: true,
@@ -26986,85 +27055,85 @@
 	  }
 	});
 
-	var _Router2 = __webpack_require__(256);
+	var _Router2 = __webpack_require__(253);
 
 	var _Router3 = _interopRequireDefault(_Router2);
 
-	var _Link2 = __webpack_require__(287);
+	var _Link2 = __webpack_require__(284);
 
 	var _Link3 = _interopRequireDefault(_Link2);
 
-	var _IndexLink2 = __webpack_require__(288);
+	var _IndexLink2 = __webpack_require__(285);
 
 	var _IndexLink3 = _interopRequireDefault(_IndexLink2);
 
-	var _withRouter2 = __webpack_require__(289);
+	var _withRouter2 = __webpack_require__(286);
 
 	var _withRouter3 = _interopRequireDefault(_withRouter2);
 
-	var _IndexRedirect2 = __webpack_require__(291);
+	var _IndexRedirect2 = __webpack_require__(288);
 
 	var _IndexRedirect3 = _interopRequireDefault(_IndexRedirect2);
 
-	var _IndexRoute2 = __webpack_require__(293);
+	var _IndexRoute2 = __webpack_require__(290);
 
 	var _IndexRoute3 = _interopRequireDefault(_IndexRoute2);
 
-	var _Redirect2 = __webpack_require__(292);
+	var _Redirect2 = __webpack_require__(289);
 
 	var _Redirect3 = _interopRequireDefault(_Redirect2);
 
-	var _Route2 = __webpack_require__(294);
+	var _Route2 = __webpack_require__(291);
 
 	var _Route3 = _interopRequireDefault(_Route2);
 
-	var _History2 = __webpack_require__(295);
+	var _History2 = __webpack_require__(292);
 
 	var _History3 = _interopRequireDefault(_History2);
 
-	var _Lifecycle2 = __webpack_require__(296);
+	var _Lifecycle2 = __webpack_require__(293);
 
 	var _Lifecycle3 = _interopRequireDefault(_Lifecycle2);
 
-	var _RouteContext2 = __webpack_require__(297);
+	var _RouteContext2 = __webpack_require__(294);
 
 	var _RouteContext3 = _interopRequireDefault(_RouteContext2);
 
-	var _useRoutes2 = __webpack_require__(298);
+	var _useRoutes2 = __webpack_require__(295);
 
 	var _useRoutes3 = _interopRequireDefault(_useRoutes2);
 
-	var _RouterContext2 = __webpack_require__(284);
+	var _RouterContext2 = __webpack_require__(281);
 
 	var _RouterContext3 = _interopRequireDefault(_RouterContext2);
 
-	var _RoutingContext2 = __webpack_require__(299);
+	var _RoutingContext2 = __webpack_require__(296);
 
 	var _RoutingContext3 = _interopRequireDefault(_RoutingContext2);
 
 	var _PropTypes3 = _interopRequireDefault(_PropTypes2);
 
-	var _match2 = __webpack_require__(300);
+	var _match2 = __webpack_require__(297);
 
 	var _match3 = _interopRequireDefault(_match2);
 
-	var _useRouterHistory2 = __webpack_require__(304);
+	var _useRouterHistory2 = __webpack_require__(301);
 
 	var _useRouterHistory3 = _interopRequireDefault(_useRouterHistory2);
 
-	var _applyRouterMiddleware2 = __webpack_require__(305);
+	var _applyRouterMiddleware2 = __webpack_require__(302);
 
 	var _applyRouterMiddleware3 = _interopRequireDefault(_applyRouterMiddleware2);
 
-	var _browserHistory2 = __webpack_require__(306);
+	var _browserHistory2 = __webpack_require__(303);
 
 	var _browserHistory3 = _interopRequireDefault(_browserHistory2);
 
-	var _hashHistory2 = __webpack_require__(309);
+	var _hashHistory2 = __webpack_require__(306);
 
 	var _hashHistory3 = _interopRequireDefault(_hashHistory2);
 
-	var _createMemoryHistory2 = __webpack_require__(301);
+	var _createMemoryHistory2 = __webpack_require__(298);
 
 	var _createMemoryHistory3 = _interopRequireDefault(_createMemoryHistory2);
 
@@ -27106,7 +27175,7 @@
 	exports.createMemoryHistory = _createMemoryHistory3.default;
 
 /***/ },
-/* 248 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27204,7 +27273,7 @@
 	}
 
 /***/ },
-/* 249 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27214,15 +27283,15 @@
 
 	var _react = __webpack_require__(1);
 
-	var _deprecateObjectProperties = __webpack_require__(250);
+	var _deprecateObjectProperties = __webpack_require__(247);
 
 	var _deprecateObjectProperties2 = _interopRequireDefault(_deprecateObjectProperties);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	var InternalPropTypes = _interopRequireWildcard(_InternalPropTypes);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -27311,7 +27380,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 250 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27319,7 +27388,7 @@
 	exports.__esModule = true;
 	exports.canUseMembrane = undefined;
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -27392,7 +27461,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 251 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27401,7 +27470,7 @@
 	exports.default = routerWarning;
 	exports._resetWarned = _resetWarned;
 
-	var _warning = __webpack_require__(252);
+	var _warning = __webpack_require__(249);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -27433,7 +27502,7 @@
 	}
 
 /***/ },
-/* 252 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27500,7 +27569,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 253 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27537,7 +27606,7 @@
 	var routes = exports.routes = oneOfType([route, arrayOf(route)]);
 
 /***/ },
-/* 254 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27549,7 +27618,7 @@
 	exports.getParams = getParams;
 	exports.formatPattern = formatPattern;
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -27755,7 +27824,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 255 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -27813,7 +27882,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 256 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27822,15 +27891,15 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _createHashHistory = __webpack_require__(257);
+	var _createHashHistory = __webpack_require__(254);
 
 	var _createHashHistory2 = _interopRequireDefault(_createHashHistory);
 
-	var _useQueries = __webpack_require__(273);
+	var _useQueries = __webpack_require__(270);
 
 	var _useQueries2 = _interopRequireDefault(_useQueries);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -27838,21 +27907,21 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _createTransitionManager = __webpack_require__(276);
+	var _createTransitionManager = __webpack_require__(273);
 
 	var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
-	var _RouterContext = __webpack_require__(284);
+	var _RouterContext = __webpack_require__(281);
 
 	var _RouterContext2 = _interopRequireDefault(_RouterContext);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _RouterUtils = __webpack_require__(286);
+	var _RouterUtils = __webpack_require__(283);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -28043,7 +28112,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 257 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28054,25 +28123,25 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _ExecutionEnvironment = __webpack_require__(261);
+	var _ExecutionEnvironment = __webpack_require__(258);
 
-	var _DOMUtils = __webpack_require__(262);
+	var _DOMUtils = __webpack_require__(259);
 
-	var _DOMStateStorage = __webpack_require__(263);
+	var _DOMStateStorage = __webpack_require__(260);
 
-	var _createDOMHistory = __webpack_require__(264);
+	var _createDOMHistory = __webpack_require__(261);
 
 	var _createDOMHistory2 = _interopRequireDefault(_createDOMHistory);
 
@@ -28295,7 +28364,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 258 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -28362,7 +28431,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 259 */
+/* 256 */
 /***/ function(module, exports) {
 
 	/**
@@ -28398,7 +28467,7 @@
 	};
 
 /***/ },
-/* 260 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28409,7 +28478,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -28451,7 +28520,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 261 */
+/* 258 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28461,7 +28530,7 @@
 	exports.canUseDOM = canUseDOM;
 
 /***/ },
-/* 262 */
+/* 259 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28541,7 +28610,7 @@
 	}
 
 /***/ },
-/* 263 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/*eslint-disable no-empty */
@@ -28553,7 +28622,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -28620,7 +28689,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 264 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28631,15 +28700,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _ExecutionEnvironment = __webpack_require__(261);
+	var _ExecutionEnvironment = __webpack_require__(258);
 
-	var _DOMUtils = __webpack_require__(262);
+	var _DOMUtils = __webpack_require__(259);
 
-	var _createHistory = __webpack_require__(265);
+	var _createHistory = __webpack_require__(262);
 
 	var _createHistory2 = _interopRequireDefault(_createHistory);
 
@@ -28666,7 +28735,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 265 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28677,29 +28746,29 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _deepEqual = __webpack_require__(266);
+	var _deepEqual = __webpack_require__(263);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _AsyncUtils = __webpack_require__(269);
+	var _AsyncUtils = __webpack_require__(266);
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _createLocation2 = __webpack_require__(270);
+	var _createLocation2 = __webpack_require__(267);
 
 	var _createLocation3 = _interopRequireDefault(_createLocation2);
 
-	var _runTransitionHook = __webpack_require__(271);
+	var _runTransitionHook = __webpack_require__(268);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _deprecate = __webpack_require__(272);
+	var _deprecate = __webpack_require__(269);
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
@@ -28960,12 +29029,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 266 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var pSlice = Array.prototype.slice;
-	var objectKeys = __webpack_require__(267);
-	var isArguments = __webpack_require__(268);
+	var objectKeys = __webpack_require__(264);
+	var isArguments = __webpack_require__(265);
 
 	var deepEqual = module.exports = function (actual, expected, opts) {
 	  if (!opts) opts = {};
@@ -29060,7 +29129,7 @@
 
 
 /***/ },
-/* 267 */
+/* 264 */
 /***/ function(module, exports) {
 
 	exports = module.exports = typeof Object.keys === 'function'
@@ -29075,7 +29144,7 @@
 
 
 /***/ },
-/* 268 */
+/* 265 */
 /***/ function(module, exports) {
 
 	var supportsArgumentsClass = (function(){
@@ -29101,7 +29170,7 @@
 
 
 /***/ },
-/* 269 */
+/* 266 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29164,7 +29233,7 @@
 	}
 
 /***/ },
-/* 270 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29175,13 +29244,13 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
 	function createLocation() {
 	  var location = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
@@ -29221,7 +29290,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 271 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29230,7 +29299,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -29251,7 +29320,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 272 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29260,7 +29329,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -29276,7 +29345,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 273 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29287,19 +29356,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _queryString = __webpack_require__(274);
+	var _queryString = __webpack_require__(271);
 
-	var _runTransitionHook = __webpack_require__(271);
+	var _runTransitionHook = __webpack_require__(268);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _deprecate = __webpack_require__(272);
+	var _deprecate = __webpack_require__(269);
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
@@ -29458,11 +29527,11 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 274 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var strictUriEncode = __webpack_require__(275);
+	var strictUriEncode = __webpack_require__(272);
 
 	exports.extract = function (str) {
 		return str.split('?')[1] || '';
@@ -29530,7 +29599,7 @@
 
 
 /***/ },
-/* 275 */
+/* 272 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29542,7 +29611,7 @@
 
 
 /***/ },
-/* 276 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29553,25 +29622,25 @@
 
 	exports.default = createTransitionManager;
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _computeChangedRoutes2 = __webpack_require__(277);
+	var _computeChangedRoutes2 = __webpack_require__(274);
 
 	var _computeChangedRoutes3 = _interopRequireDefault(_computeChangedRoutes2);
 
-	var _TransitionUtils = __webpack_require__(278);
+	var _TransitionUtils = __webpack_require__(275);
 
-	var _isActive2 = __webpack_require__(280);
+	var _isActive2 = __webpack_require__(277);
 
 	var _isActive3 = _interopRequireDefault(_isActive2);
 
-	var _getComponents = __webpack_require__(281);
+	var _getComponents = __webpack_require__(278);
 
 	var _getComponents2 = _interopRequireDefault(_getComponents);
 
-	var _matchRoutes = __webpack_require__(283);
+	var _matchRoutes = __webpack_require__(280);
 
 	var _matchRoutes2 = _interopRequireDefault(_matchRoutes);
 
@@ -29850,14 +29919,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 277 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
 	function routeParamsChanged(route, prevState, nextState) {
 	  if (!route.path) return false;
@@ -29932,7 +30001,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 278 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29942,9 +30011,9 @@
 	exports.runChangeHooks = runChangeHooks;
 	exports.runLeaveHooks = runLeaveHooks;
 
-	var _AsyncUtils = __webpack_require__(279);
+	var _AsyncUtils = __webpack_require__(276);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -30060,7 +30129,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 279 */
+/* 276 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -30153,7 +30222,7 @@
 	}
 
 /***/ },
-/* 280 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30164,7 +30233,7 @@
 
 	exports.default = isActive;
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
 	function deepEqual(a, b) {
 	  if (a == b) return true;
@@ -30310,16 +30379,16 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 281 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _AsyncUtils = __webpack_require__(279);
+	var _AsyncUtils = __webpack_require__(276);
 
-	var _makeStateWithLocation = __webpack_require__(282);
+	var _makeStateWithLocation = __webpack_require__(279);
 
 	var _makeStateWithLocation2 = _interopRequireDefault(_makeStateWithLocation);
 
@@ -30361,7 +30430,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 282 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30372,9 +30441,9 @@
 
 	exports.default = makeStateWithLocation;
 
-	var _deprecateObjectProperties = __webpack_require__(250);
+	var _deprecateObjectProperties = __webpack_require__(247);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -30416,7 +30485,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 283 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30429,19 +30498,19 @@
 
 	exports.default = matchRoutes;
 
-	var _AsyncUtils = __webpack_require__(279);
+	var _AsyncUtils = __webpack_require__(276);
 
-	var _makeStateWithLocation = __webpack_require__(282);
+	var _makeStateWithLocation = __webpack_require__(279);
 
 	var _makeStateWithLocation2 = _interopRequireDefault(_makeStateWithLocation);
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30673,7 +30742,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 284 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30684,7 +30753,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -30692,17 +30761,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _deprecateObjectProperties = __webpack_require__(250);
+	var _deprecateObjectProperties = __webpack_require__(247);
 
 	var _deprecateObjectProperties2 = _interopRequireDefault(_deprecateObjectProperties);
 
-	var _getRouteParams = __webpack_require__(285);
+	var _getRouteParams = __webpack_require__(282);
 
 	var _getRouteParams2 = _interopRequireDefault(_getRouteParams);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -30835,14 +30904,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 285 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
 	/**
 	 * Extracts an object of params the given route cares about from
@@ -30866,7 +30935,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 286 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30878,7 +30947,7 @@
 	exports.createRouterObject = createRouterObject;
 	exports.createRoutingHistory = createRoutingHistory;
 
-	var _deprecateObjectProperties = __webpack_require__(250);
+	var _deprecateObjectProperties = __webpack_require__(247);
 
 	var _deprecateObjectProperties2 = _interopRequireDefault(_deprecateObjectProperties);
 
@@ -30904,7 +30973,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 287 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30917,15 +30986,15 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _PropTypes = __webpack_require__(249);
+	var _PropTypes = __webpack_require__(246);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31086,7 +31155,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 288 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31099,7 +31168,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Link = __webpack_require__(287);
+	var _Link = __webpack_require__(284);
 
 	var _Link2 = _interopRequireDefault(_Link);
 
@@ -31119,7 +31188,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 289 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31130,7 +31199,7 @@
 
 	exports.default = withRouter;
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -31138,11 +31207,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _hoistNonReactStatics = __webpack_require__(290);
+	var _hoistNonReactStatics = __webpack_require__(287);
 
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
-	var _PropTypes = __webpack_require__(249);
+	var _PropTypes = __webpack_require__(246);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31189,7 +31258,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 290 */
+/* 287 */
 /***/ function(module, exports) {
 
 	/**
@@ -31245,7 +31314,7 @@
 
 
 /***/ },
-/* 291 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31256,19 +31325,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Redirect = __webpack_require__(292);
+	var _Redirect = __webpack_require__(289);
 
 	var _Redirect2 = _interopRequireDefault(_Redirect);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31314,7 +31383,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 292 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31325,15 +31394,15 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _PatternUtils = __webpack_require__(254);
+	var _PatternUtils = __webpack_require__(251);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31422,7 +31491,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 293 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31433,17 +31502,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31488,7 +31557,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 294 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31499,13 +31568,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31551,18 +31620,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 295 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	exports.__esModule = true;
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
-	var _InternalPropTypes = __webpack_require__(253);
+	var _InternalPropTypes = __webpack_require__(250);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31586,14 +31655,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 296 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	exports.__esModule = true;
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -31601,7 +31670,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -31660,14 +31729,14 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 297 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	exports.__esModule = true;
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -31711,7 +31780,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 298 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31720,15 +31789,15 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _useQueries = __webpack_require__(273);
+	var _useQueries = __webpack_require__(270);
 
 	var _useQueries2 = _interopRequireDefault(_useQueries);
 
-	var _createTransitionManager = __webpack_require__(276);
+	var _createTransitionManager = __webpack_require__(273);
 
 	var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -31768,7 +31837,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 299 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31779,11 +31848,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouterContext = __webpack_require__(284);
+	var _RouterContext = __webpack_require__(281);
 
 	var _RouterContext2 = _interopRequireDefault(_RouterContext);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -31804,7 +31873,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 300 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31813,23 +31882,23 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _createMemoryHistory = __webpack_require__(301);
+	var _createMemoryHistory = __webpack_require__(298);
 
 	var _createMemoryHistory2 = _interopRequireDefault(_createMemoryHistory);
 
-	var _createTransitionManager = __webpack_require__(276);
+	var _createTransitionManager = __webpack_require__(273);
 
 	var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 
-	var _RouteUtils = __webpack_require__(248);
+	var _RouteUtils = __webpack_require__(245);
 
-	var _RouterUtils = __webpack_require__(286);
+	var _RouterUtils = __webpack_require__(283);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31893,7 +31962,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 301 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31901,15 +31970,15 @@
 	exports.__esModule = true;
 	exports.default = createMemoryHistory;
 
-	var _useQueries = __webpack_require__(273);
+	var _useQueries = __webpack_require__(270);
 
 	var _useQueries2 = _interopRequireDefault(_useQueries);
 
-	var _useBasename = __webpack_require__(302);
+	var _useBasename = __webpack_require__(299);
 
 	var _useBasename2 = _interopRequireDefault(_useBasename);
 
-	var _createMemoryHistory = __webpack_require__(303);
+	var _createMemoryHistory = __webpack_require__(300);
 
 	var _createMemoryHistory2 = _interopRequireDefault(_createMemoryHistory);
 
@@ -31930,7 +31999,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 302 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -31941,19 +32010,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _ExecutionEnvironment = __webpack_require__(261);
+	var _ExecutionEnvironment = __webpack_require__(258);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _runTransitionHook = __webpack_require__(271);
+	var _runTransitionHook = __webpack_require__(268);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _deprecate = __webpack_require__(272);
+	var _deprecate = __webpack_require__(269);
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
@@ -32094,7 +32163,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 303 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -32105,19 +32174,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(258);
+	var _warning = __webpack_require__(255);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _createHistory = __webpack_require__(265);
+	var _createHistory = __webpack_require__(262);
 
 	var _createHistory2 = _interopRequireDefault(_createHistory);
 
@@ -32254,7 +32323,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 304 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32262,11 +32331,11 @@
 	exports.__esModule = true;
 	exports.default = useRouterHistory;
 
-	var _useQueries = __webpack_require__(273);
+	var _useQueries = __webpack_require__(270);
 
 	var _useQueries2 = _interopRequireDefault(_useQueries);
 
-	var _useBasename = __webpack_require__(302);
+	var _useBasename = __webpack_require__(299);
 
 	var _useBasename2 = _interopRequireDefault(_useBasename);
 
@@ -32282,7 +32351,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 305 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -32295,11 +32364,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouterContext = __webpack_require__(284);
+	var _RouterContext = __webpack_require__(281);
 
 	var _RouterContext2 = _interopRequireDefault(_RouterContext);
 
-	var _routerWarning = __webpack_require__(251);
+	var _routerWarning = __webpack_require__(248);
 
 	var _routerWarning2 = _interopRequireDefault(_routerWarning);
 
@@ -32345,18 +32414,18 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 306 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _createBrowserHistory = __webpack_require__(307);
+	var _createBrowserHistory = __webpack_require__(304);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
-	var _createRouterHistory = __webpack_require__(308);
+	var _createRouterHistory = __webpack_require__(305);
 
 	var _createRouterHistory2 = _interopRequireDefault(_createRouterHistory);
 
@@ -32366,7 +32435,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 307 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -32377,21 +32446,21 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(255);
+	var _invariant = __webpack_require__(252);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Actions = __webpack_require__(259);
+	var _Actions = __webpack_require__(256);
 
-	var _PathUtils = __webpack_require__(260);
+	var _PathUtils = __webpack_require__(257);
 
-	var _ExecutionEnvironment = __webpack_require__(261);
+	var _ExecutionEnvironment = __webpack_require__(258);
 
-	var _DOMUtils = __webpack_require__(262);
+	var _DOMUtils = __webpack_require__(259);
 
-	var _DOMStateStorage = __webpack_require__(263);
+	var _DOMStateStorage = __webpack_require__(260);
 
-	var _createDOMHistory = __webpack_require__(264);
+	var _createDOMHistory = __webpack_require__(261);
 
 	var _createDOMHistory2 = _interopRequireDefault(_createDOMHistory);
 
@@ -32552,7 +32621,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 308 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32565,7 +32634,7 @@
 	  return history;
 	};
 
-	var _useRouterHistory = __webpack_require__(304);
+	var _useRouterHistory = __webpack_require__(301);
 
 	var _useRouterHistory2 = _interopRequireDefault(_useRouterHistory);
 
@@ -32576,18 +32645,18 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 309 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _createHashHistory = __webpack_require__(257);
+	var _createHashHistory = __webpack_require__(254);
 
 	var _createHashHistory2 = _interopRequireDefault(_createHashHistory);
 
-	var _createRouterHistory = __webpack_require__(308);
+	var _createRouterHistory = __webpack_require__(305);
 
 	var _createRouterHistory2 = _interopRequireDefault(_createRouterHistory);
 
@@ -32597,7 +32666,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 310 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32609,27 +32678,27 @@
 
 	var _redux = __webpack_require__(184);
 
-	var _axios = __webpack_require__(311);
+	var _axios = __webpack_require__(308);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
-	var _reactRouterRedux = __webpack_require__(336);
+	var _reactRouterRedux = __webpack_require__(333);
 
-	var _reactRouter = __webpack_require__(247);
+	var _reactRouter = __webpack_require__(244);
 
-	var _reduxLogger = __webpack_require__(341);
+	var _reduxLogger = __webpack_require__(338);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(347);
+	var _reduxThunk = __webpack_require__(344);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reduxPromiseMiddleware = __webpack_require__(348);
+	var _reduxPromiseMiddleware = __webpack_require__(345);
 
 	var _reduxPromiseMiddleware2 = _interopRequireDefault(_reduxPromiseMiddleware);
 
-	var _index = __webpack_require__(350);
+	var _index = __webpack_require__(347);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -32727,21 +32796,21 @@
 	exports.default = store;
 
 /***/ },
-/* 311 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(312);
+	module.exports = __webpack_require__(309);
 
 /***/ },
-/* 312 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
-	var bind = __webpack_require__(314);
-	var Axios = __webpack_require__(315);
-	var defaults = __webpack_require__(316);
+	var utils = __webpack_require__(310);
+	var bind = __webpack_require__(311);
+	var Axios = __webpack_require__(312);
+	var defaults = __webpack_require__(313);
 
 	/**
 	 * Create an instance of Axios
@@ -32774,15 +32843,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(333);
-	axios.CancelToken = __webpack_require__(334);
-	axios.isCancel = __webpack_require__(330);
+	axios.Cancel = __webpack_require__(330);
+	axios.CancelToken = __webpack_require__(331);
+	axios.isCancel = __webpack_require__(327);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(335);
+	axios.spread = __webpack_require__(332);
 
 	module.exports = axios;
 
@@ -32791,12 +32860,12 @@
 
 
 /***/ },
-/* 313 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(314);
+	var bind = __webpack_require__(311);
 
 	/*global toString:true*/
 
@@ -33096,7 +33165,7 @@
 
 
 /***/ },
-/* 314 */
+/* 311 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33113,17 +33182,17 @@
 
 
 /***/ },
-/* 315 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(316);
-	var utils = __webpack_require__(313);
-	var InterceptorManager = __webpack_require__(327);
-	var dispatchRequest = __webpack_require__(328);
-	var isAbsoluteURL = __webpack_require__(331);
-	var combineURLs = __webpack_require__(332);
+	var defaults = __webpack_require__(313);
+	var utils = __webpack_require__(310);
+	var InterceptorManager = __webpack_require__(324);
+	var dispatchRequest = __webpack_require__(325);
+	var isAbsoluteURL = __webpack_require__(328);
+	var combineURLs = __webpack_require__(329);
 
 	/**
 	 * Create a new instance of Axios
@@ -33204,13 +33273,13 @@
 
 
 /***/ },
-/* 316 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(313);
-	var normalizeHeaderName = __webpack_require__(317);
+	var utils = __webpack_require__(310);
+	var normalizeHeaderName = __webpack_require__(314);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -33227,10 +33296,10 @@
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(318);
+	    adapter = __webpack_require__(315);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(318);
+	    adapter = __webpack_require__(315);
 	  }
 	  return adapter;
 	}
@@ -33304,12 +33373,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 317 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -33322,18 +33391,18 @@
 
 
 /***/ },
-/* 318 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(313);
-	var settle = __webpack_require__(319);
-	var buildURL = __webpack_require__(322);
-	var parseHeaders = __webpack_require__(323);
-	var isURLSameOrigin = __webpack_require__(324);
-	var createError = __webpack_require__(320);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(325);
+	var utils = __webpack_require__(310);
+	var settle = __webpack_require__(316);
+	var buildURL = __webpack_require__(319);
+	var parseHeaders = __webpack_require__(320);
+	var isURLSameOrigin = __webpack_require__(321);
+	var createError = __webpack_require__(317);
+	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(322);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -33429,7 +33498,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(326);
+	      var cookies = __webpack_require__(323);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -33506,12 +33575,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 319 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(320);
+	var createError = __webpack_require__(317);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -33537,12 +33606,12 @@
 
 
 /***/ },
-/* 320 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(321);
+	var enhanceError = __webpack_require__(318);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -33560,7 +33629,7 @@
 
 
 /***/ },
-/* 321 */
+/* 318 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33585,12 +33654,12 @@
 
 
 /***/ },
-/* 322 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -33659,12 +33728,12 @@
 
 
 /***/ },
-/* 323 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	/**
 	 * Parse headers into an object
@@ -33702,12 +33771,12 @@
 
 
 /***/ },
-/* 324 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -33776,7 +33845,7 @@
 
 
 /***/ },
-/* 325 */
+/* 322 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33818,12 +33887,12 @@
 
 
 /***/ },
-/* 326 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -33877,12 +33946,12 @@
 
 
 /***/ },
-/* 327 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -33935,15 +34004,15 @@
 
 
 /***/ },
-/* 328 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
-	var transformData = __webpack_require__(329);
-	var isCancel = __webpack_require__(330);
-	var defaults = __webpack_require__(316);
+	var utils = __webpack_require__(310);
+	var transformData = __webpack_require__(326);
+	var isCancel = __webpack_require__(327);
+	var defaults = __webpack_require__(313);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -34020,12 +34089,12 @@
 
 
 /***/ },
-/* 329 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(313);
+	var utils = __webpack_require__(310);
 
 	/**
 	 * Transform the data for a request or a response
@@ -34046,7 +34115,7 @@
 
 
 /***/ },
-/* 330 */
+/* 327 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34057,7 +34126,7 @@
 
 
 /***/ },
-/* 331 */
+/* 328 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34077,7 +34146,7 @@
 
 
 /***/ },
-/* 332 */
+/* 329 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34095,7 +34164,7 @@
 
 
 /***/ },
-/* 333 */
+/* 330 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34120,12 +34189,12 @@
 
 
 /***/ },
-/* 334 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(333);
+	var Cancel = __webpack_require__(330);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -34183,7 +34252,7 @@
 
 
 /***/ },
-/* 335 */
+/* 332 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34216,7 +34285,7 @@
 
 
 /***/ },
-/* 336 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34226,7 +34295,7 @@
 	});
 	exports.routerMiddleware = exports.routerActions = exports.goForward = exports.goBack = exports.go = exports.replace = exports.push = exports.CALL_HISTORY_METHOD = exports.routerReducer = exports.LOCATION_CHANGE = exports.syncHistoryWithStore = undefined;
 
-	var _reducer = __webpack_require__(337);
+	var _reducer = __webpack_require__(334);
 
 	Object.defineProperty(exports, 'LOCATION_CHANGE', {
 	  enumerable: true,
@@ -34241,7 +34310,7 @@
 	  }
 	});
 
-	var _actions = __webpack_require__(338);
+	var _actions = __webpack_require__(335);
 
 	Object.defineProperty(exports, 'CALL_HISTORY_METHOD', {
 	  enumerable: true,
@@ -34286,11 +34355,11 @@
 	  }
 	});
 
-	var _sync = __webpack_require__(339);
+	var _sync = __webpack_require__(336);
 
 	var _sync2 = _interopRequireDefault(_sync);
 
-	var _middleware = __webpack_require__(340);
+	var _middleware = __webpack_require__(337);
 
 	var _middleware2 = _interopRequireDefault(_middleware);
 
@@ -34300,7 +34369,7 @@
 	exports.routerMiddleware = _middleware2['default'];
 
 /***/ },
-/* 337 */
+/* 334 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34343,7 +34412,7 @@
 	}
 
 /***/ },
-/* 338 */
+/* 335 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34385,7 +34454,7 @@
 	var routerActions = exports.routerActions = { push: push, replace: replace, go: go, goBack: goBack, goForward: goForward };
 
 /***/ },
-/* 339 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34398,7 +34467,7 @@
 
 	exports['default'] = syncHistoryWithStore;
 
-	var _reducer = __webpack_require__(337);
+	var _reducer = __webpack_require__(334);
 
 	var defaultSelectLocationState = function defaultSelectLocationState(state) {
 	  return state.routing;
@@ -34543,7 +34612,7 @@
 	}
 
 /***/ },
-/* 340 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34553,7 +34622,7 @@
 	});
 	exports['default'] = routerMiddleware;
 
-	var _actions = __webpack_require__(338);
+	var _actions = __webpack_require__(335);
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -34581,7 +34650,7 @@
 	}
 
 /***/ },
-/* 341 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34592,11 +34661,11 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _core = __webpack_require__(342);
+	var _core = __webpack_require__(339);
 
-	var _helpers = __webpack_require__(343);
+	var _helpers = __webpack_require__(340);
 
-	var _defaults = __webpack_require__(346);
+	var _defaults = __webpack_require__(343);
 
 	var _defaults2 = _interopRequireDefault(_defaults);
 
@@ -34699,7 +34768,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 342 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34712,9 +34781,9 @@
 
 	exports.printBuffer = printBuffer;
 
-	var _helpers = __webpack_require__(343);
+	var _helpers = __webpack_require__(340);
 
-	var _diff = __webpack_require__(344);
+	var _diff = __webpack_require__(341);
 
 	var _diff2 = _interopRequireDefault(_diff);
 
@@ -34841,7 +34910,7 @@
 	}
 
 /***/ },
-/* 343 */
+/* 340 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -34865,7 +34934,7 @@
 	var timer = exports.timer = typeof performance !== "undefined" && performance !== null && typeof performance.now === "function" ? performance : Date;
 
 /***/ },
-/* 344 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34875,7 +34944,7 @@
 	});
 	exports.default = diffLogger;
 
-	var _deepDiff = __webpack_require__(345);
+	var _deepDiff = __webpack_require__(342);
 
 	var _deepDiff2 = _interopRequireDefault(_deepDiff);
 
@@ -34964,7 +35033,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -35393,7 +35462,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 346 */
+/* 343 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -35444,7 +35513,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 347 */
+/* 344 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -35472,7 +35541,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 348 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35489,7 +35558,7 @@
 
 	exports.default = promiseMiddleware;
 
-	var _isPromise = __webpack_require__(349);
+	var _isPromise = __webpack_require__(346);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
@@ -35646,7 +35715,7 @@
 	}
 
 /***/ },
-/* 349 */
+/* 346 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -35667,7 +35736,7 @@
 	}
 
 /***/ },
-/* 350 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35678,41 +35747,37 @@
 
 	var _redux = __webpack_require__(184);
 
-	var _reactRouterRedux = __webpack_require__(336);
+	var _reactRouterRedux = __webpack_require__(333);
 
-	var _changeJSON = __webpack_require__(351);
+	var _changeJSON = __webpack_require__(348);
 
 	var _changeJSON2 = _interopRequireDefault(_changeJSON);
 
-	var _changeGroupNumber = __webpack_require__(353);
+	var _changeGroupNumber = __webpack_require__(350);
 
 	var _changeGroupNumber2 = _interopRequireDefault(_changeGroupNumber);
 
+	var _changeAccordion = __webpack_require__(351);
+
+	var _changeAccordion2 = _interopRequireDefault(_changeAccordion);
+
+	var _changeGroupsLevelOneToCopy = __webpack_require__(352);
+
+	var _changeGroupsLevelOneToCopy2 = _interopRequireDefault(_changeGroupsLevelOneToCopy);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/*import { combineReducers } from 'redux';
-	import { routerReducer } from 'react-router-redux';
-
-	import importFiles from './importFiles';
-
-	const rootReducer = combineReducers({
-		user: importFiles,
-		tweets: tweetsReducer,
-		routing: routerReducer
-	});
-
-	export default rootReducer;*/
 
 	var rootReducer = (0, _redux.combineReducers)({
 		groupNumber: _changeGroupNumber2.default,
 		jsonData: _changeJSON2.default,
-		routing: _reactRouterRedux.routerReducer
+		routing: _reactRouterRedux.routerReducer,
+		accordion: _changeAccordion2.default
 	});
 
 	exports.default = rootReducer;
 
 /***/ },
-/* 351 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35721,28 +35786,9 @@
 		value: true
 	});
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*import comments from '../data/comments';
-	                                                                                                                                                                                                                                                                  
-	                                                                                                                                                                                                                                                                  const importFiles = (state = comments, action) => {
-	                                                                                                                                                                                                                                                                  	switch(action.type) {
-	                                                                                                                                                                                                                                                                  		case "CHANGE_NAME": {
-	                                                                                                                                                                                                                                                                  			state = {...state, name: action.payload}
-	                                                                                                                                                                                                                                                                  			break;
-	                                                                                                                                                                                                                                                                  		}
-	                                                                                                                                                                                                                                                                  		case "CHANGE_AGE": {
-	                                                                                                                                                                                                                                                                  			state = {...state, age: action.payload}
-	                                                                                                                                                                                                                                                                  			break;
-	                                                                                                                                                                                                                                                                  		}
-	                                                                                                                                                                                                                                                                  		case "E": {
-	                                                                                                                                                                                                                                                                  			throw new Error("AAAA!!!!");
-	                                                                                                                                                                                                                                                                  		}
-	                                                                                                                                                                                                                                                                  	}
-	                                                                                                                                                                                                                                                                  	return state;
-	                                                                                                                                                                                                                                                                  };
-	                                                                                                                                                                                                                                                                  
-	                                                                                                                                                                                                                                                                  export default importFiles;*/
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _JSONExample = __webpack_require__(352);
+	var _JSONExample = __webpack_require__(349);
 
 	var _JSONExample2 = _interopRequireDefault(_JSONExample);
 
@@ -35773,7 +35819,7 @@
 	exports.default = changeJSON;
 
 /***/ },
-/* 352 */
+/* 349 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -37828,7 +37874,7 @@
 	exports.default = JSONExample;
 
 /***/ },
-/* 353 */
+/* 350 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -37858,6 +37904,308 @@
 	};
 
 	exports.default = changeGroupNumber;
+
+/***/ },
+/* 351 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _helpers = __webpack_require__(243);
+
+	var _JSONExample = __webpack_require__(349);
+
+	var _JSONExample2 = _interopRequireDefault(_JSONExample);
+
+	var _helpers2 = __webpack_require__(243);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var accordion = (0, _helpers.setAccordionItems)(_JSONExample2.default),
+	    groupsLevelOneToCopy = [],
+	    groupsLevelTwoToCopy = [],
+	    fieldsToCopy = [];
+
+	var changeAccordion = function changeAccordion() {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { accordion: accordion, groupsLevelOneToCopy: groupsLevelOneToCopy, groupsLevelTwoToCopy: groupsLevelTwoToCopy, fieldsToCopy: fieldsToCopy };
+		var action = arguments[1];
+
+		switch (action.type) {
+			case "CHANGE_FULL_ACCORDION":
+				{
+					console.log('change full accordion');
+					state = _extends({}, state, { accordion: action.accordion });
+					break;
+				}
+
+			case "DELETE_GROUP_L1":
+				{
+					var element = action.element,
+					    index = action.index,
+					    buttonId = 'btn_group_level_one_mark_' + element.key;
+					var _groupsLevelOneToCopy = action.groupsLevelOneToCopy,
+					    _accordion = [].concat(_toConsumableArray(state.accordion)),
+					    indexForElementToRemove = void 0;
+
+
+					_accordion = (0, _helpers2.removeArrayElement)(_accordion, index);
+					if (element.marked) {
+						$('#' + buttonId).removeClass('marked');
+
+						indexForElementToRemove = _groupsLevelOneToCopy.map(function (key, i) {
+							return key;
+						}).indexOf(element.key);
+
+						_groupsLevelOneToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy, indexForElementToRemove);
+					}
+
+					// delete group and field to copy!
+
+					state = _extends({}, state, { accordion: _accordion, groupsLevelOneToCopy: _groupsLevelOneToCopy });
+					return state;
+					break;
+				}
+
+			case "DELETE_GROUP_L2":
+				{
+					var groupLevelOneKey = action.groupLevelOneKey,
+					    _element = action.element,
+					    _index = action.index,
+					    _buttonId = 'btn_group_level_two_mark_' + _element.key;
+
+					var subAccordionItems = action.subAccordionItems,
+					    _groupsLevelTwoToCopy = action.groupsLevelTwoToCopy,
+					    _accordion2 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove = void 0,
+					    indexSubAccordion = void 0;
+
+					subAccordionItems = (0, _helpers2.removeArrayElement)(subAccordionItems, _index);
+					if (_element.marked) {
+						$('#' + _buttonId).removeClass('marked');
+
+						_indexForElementToRemove = _groupsLevelTwoToCopy.map(function (key, i) {
+							return key;
+						}).indexOf(_element.key);
+
+						_groupsLevelTwoToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy, _indexForElementToRemove);
+					}
+
+					//delete field to copy!
+
+					indexSubAccordion = _accordion2.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(groupLevelOneKey);
+
+					_accordion2[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion2[indexSubAccordion].content, _index);
+
+					state = _extends({}, state, { accordion: _accordion2, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
+					return state;
+					break;
+				}
+
+			case "DELETE_FIELD":
+				{
+					var _groupLevelOneKey = action.groupLevelOneKey,
+					    groupLevelTwoKey = action.groupLevelTwoKey,
+					    _element2 = action.element,
+					    _index2 = action.index,
+					    _buttonId2 = "btn_field_" + _element2.key;
+
+					var fields = action.fields,
+					    _fieldsToCopy = action.fieldsToCopy,
+					    _accordion3 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove2 = void 0,
+					    _indexSubAccordion = void 0,
+					    indexAccordionSection = void 0;
+
+					if (_element2.marked) {
+						$('#' + _buttonId2).removeClass('marked');
+
+						_indexForElementToRemove2 = _fieldsToCopy.map(function (key, i) {
+							return key;
+						}).indexOf(_element2.key);
+
+						_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
+					}
+
+					_indexSubAccordion = _accordion3.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(_groupLevelOneKey);
+
+					indexAccordionSection = _accordion3[_indexSubAccordion].content.map(function (section, i) {
+						return section.key;
+					}).indexOf(groupLevelTwoKey);
+
+					_accordion3[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion3[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
+
+					state = _extends({}, state, { accordion: _accordion3, fieldsToCopy: _fieldsToCopy });
+					return state;
+					break;
+				}
+
+			case "MARK_GROUP_L1":
+				{
+					var _element3 = action.element,
+					    _index3 = action.index,
+					    _buttonId3 = 'btn_group_level_one_mark_' + _element3.key;
+
+					var _groupsLevelOneToCopy2 = action.groupsLevelOneToCopy,
+					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove3 = void 0;
+
+
+					if (_element3.marked) {
+						_indexForElementToRemove3 = _groupsLevelOneToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element3.key);
+
+						_groupsLevelOneToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy2, _indexForElementToRemove3);
+						_accordion4[_index3].marked = false;
+					} else {
+						_accordion4[_index3].marked = true;
+						_groupsLevelOneToCopy2.push(_accordion4[_index3].key);
+					}
+
+					state = _extends({}, state, { groupsLevelOneToCopy: _groupsLevelOneToCopy2 });
+					return state;
+					break;
+				}
+
+			case "MARK_GROUP_L2":
+				{
+					var _groupLevelOneKey2 = action.groupLevelOneKey,
+					    _element4 = action.element,
+					    _index4 = action.index,
+					    _buttonId4 = 'btn_group_level_two_mark_' + _element4.key;
+
+					var _subAccordionItems = action.subAccordionItems,
+					    _groupsLevelTwoToCopy2 = action.groupsLevelTwoToCopy,
+					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove4 = void 0,
+					    _indexSubAccordion2 = void 0;
+
+					_indexSubAccordion2 = _accordion5.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(_groupLevelOneKey2);
+
+					if (_element4.marked) {
+						_indexForElementToRemove4 = _groupsLevelTwoToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element4.key);
+
+						_accordion5[_indexSubAccordion2].content[_index4].marked = false;
+						_groupsLevelTwoToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy2, _indexForElementToRemove4);
+					} else {
+						_accordion5[_indexSubAccordion2].content[_index4].marked = true;
+						_groupsLevelTwoToCopy2.push(_subAccordionItems[_index4].key);
+					}
+
+					_accordion5[_indexSubAccordion2].content[_index4]['open'] = false;
+
+					state = _extends({}, state, { accordion: _accordion5, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
+					return state;
+					break;
+				}
+
+			case "MARK_FIELD":
+				{
+					var _groupLevelOneKey3 = action.groupLevelOneKey,
+					    _groupLevelTwoKey = action.groupLevelTwoKey,
+					    _element5 = action.element,
+					    _index5 = action.index,
+					    _buttonId5 = "btn_field_" + _element5.key;
+
+					var _fields = action.fields,
+					    _fieldsToCopy2 = action.fieldsToCopy,
+					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
+					    field = void 0,
+					    _indexForElementToRemove5 = void 0,
+					    _indexSubAccordion3 = void 0,
+					    _indexAccordionSection = void 0;
+
+					_indexSubAccordion3 = _accordion6.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(_groupLevelOneKey3);
+
+					_indexAccordionSection = _accordion6[_indexSubAccordion3].content.map(function (section, i) {
+						return section.key;
+					}).indexOf(_groupLevelTwoKey);
+
+					if (_element5.marked) {
+						_indexForElementToRemove5 = _fieldsToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element5.key);
+
+						_fieldsToCopy2 = (0, _helpers2.removeArrayElement)(_fieldsToCopy2, _indexForElementToRemove5);
+						_accordion6[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
+						$('#' + _buttonId5).removeClass('marked');
+					} else {
+						_accordion6[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
+						_fieldsToCopy2.push(_fields[_index5].key);
+						$('#' + _buttonId5).addClass('marked');
+					}
+
+					_accordion6[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
+
+					console.log('mjui:', _accordion6[_indexSubAccordion3].content[_indexAccordionSection]);
+					console.log('mjuixs:', _accordion6[_indexSubAccordion3]);
+
+					state = _extends({}, state, { accordion: _accordion6, fieldsToCopy: _fieldsToCopy2 });
+					return state;
+					break;
+				}
+
+			default:
+				return state;
+		}
+		return state;
+	};
+
+	exports.default = changeAccordion;
+
+/***/ },
+/* 352 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _JSONExample = __webpack_require__(349);
+
+	var _JSONExample2 = _interopRequireDefault(_JSONExample);
+
+	var _helpers = __webpack_require__(243);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var changeGroupsLevelOneToCopy = function changeGroupsLevelOneToCopy() {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+		var action = arguments[1];
+
+		switch (action.type) {
+			case "DELETE_FROM_GROUP_LEVEL_ONE_TO_COPY":
+				{
+					console.log('g1');
+				}
+
+			default:
+				return state;
+		}
+		return state;
+	};
+
+	exports.default = changeGroupsLevelOneToCopy;
 
 /***/ }
 /******/ ]);
