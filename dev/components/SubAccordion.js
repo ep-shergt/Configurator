@@ -14,7 +14,7 @@ class SubAccordion extends Component {
     this.updateMarking = this.updateMarking.bind(this);
 
     this.state = {
-      jsonData: this.props.store.jsonData.jsonData,
+      jsonData: this.props.store.database.jsonData,
       subAccordionItems: [],
       groupsLevelTwoToCopy: []
     };
@@ -22,7 +22,7 @@ class SubAccordion extends Component {
 
   componentWillReceiveProps(nextProps) {
     let newItems = nextProps.elem.content,
-        newGroupsLevelTwoToCopy = nextProps.store.accordion.groupsLevelTwoToCopy;
+        newGroupsLevelTwoToCopy = nextProps.store.database.groupsLevelTwoToCopy;
 
     this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);    
     this.updateSubAccordionItems(newItems);
@@ -82,7 +82,7 @@ class SubAccordion extends Component {
 
   componentWillMount() {
     let subAccordion = this.props.elem.content,
-        newGroupsLevelTwoToCopy = this.props.store.accordion.groupsLevelTwoToCopy;
+        newGroupsLevelTwoToCopy = this.props.store.database.groupsLevelTwoToCopy;
 
     this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
     this.updateSubAccordionItems(subAccordion);

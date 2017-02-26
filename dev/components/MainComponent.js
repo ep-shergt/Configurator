@@ -12,44 +12,7 @@ class MainComponent extends Component {
 
 	    //getinitialState
 	    this.state = {
-	  		jsonData: this.props.store.jsonData,
-	  		accData: [{
-	  			title: "Gruppe Level 1.1",
-	  			content: [{
-		  			title: "Gruppe Level 1.2.1",
-		  			content: 'Fields'
-		  		}, {
-		  			title:"Gruppe Level 1.2.2",
-		  			content: 'Fields'
-		  		}, {
-		  			title: "Gruppe Level 1.2.3",
-		  			content: 'Fields'
-		  		}]
-	  		}, {
-	  			title:"Gruppe Level 1.2",
-	  			content: [{
-		  			title: "Gruppe Level 2.2.1",
-		  			content: 'Fields'
-		  		}, {
-		  			title:"Gruppe Level 2.2.2",
-		  			content: 'Fields'
-		  		}, {
-		  			title: "Gruppe Level 2.2.3",
-		  			content: 'Fields'
-		  		}]
-	  		}, {
-	  			title: "Gruppe Level 1.3",
-	  			content: [{
-		  			title: "Gruppe Level 3.2.1",
-		  			content: 'Fields'
-		  		}, {
-		  			title:"Gruppe Level 3.2.2",
-		  			content: 'Fields'
-		  		}, {
-		  			title: "Gruppe Level 3.2.3",
-		  			content: 'Fields'
-		  		}]
-	  		}]
+	  		jsonData: this.props.store.jsonData
 	    };
     }
 

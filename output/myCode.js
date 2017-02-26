@@ -23894,14 +23894,12 @@
 		value: true
 	});
 	exports.changeJSON = changeJSON;
-	exports.changeFullAccordion = changeFullAccordion;
 	exports.markGroupLevelOneForCopy = markGroupLevelOneForCopy;
 	exports.markGroupLevelTwoForCopy = markGroupLevelTwoForCopy;
 	exports.markFieldToCopy = markFieldToCopy;
 	exports.deleteGroupLevelOne = deleteGroupLevelOne;
 	exports.deleteGroupLevelTwo = deleteGroupLevelTwo;
 	exports.deleteField = deleteField;
-	exports.changeGroupNumber = changeGroupNumber;
 
 	// Changers
 	//***************************************************************************
@@ -23909,15 +23907,6 @@
 		return {
 			type: 'CHANGE_JSON',
 			jsonData: jsonData
-		};
-	}
-
-	function changeFullAccordion(accordion, element, index) {
-		return {
-			type: 'CHANGE_FULL_ACCORDION',
-			accordion: accordion,
-			element: element,
-			index: index
 		};
 	}
 
@@ -23994,12 +23983,6 @@
 
 	//**************************************************************************************************************************
 
-	function changeGroupNumber(groupNumber) {
-		return {
-			type: 'CHANGE_NUMBER',
-			groupNumber: groupNumber
-		};
-	}
 
 	//import * as user from "../actionCreators";
 	//import { importJSON } from "../actionCreators"
@@ -24056,44 +24039,7 @@
 			var _this = _possibleConstructorReturn(this, (MainComponent.__proto__ || Object.getPrototypeOf(MainComponent)).call(this, props));
 
 			_this.state = {
-				jsonData: _this.props.store.jsonData,
-				accData: [{
-					title: "Gruppe Level 1.1",
-					content: [{
-						title: "Gruppe Level 1.2.1",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 1.2.2",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 1.2.3",
-						content: 'Fields'
-					}]
-				}, {
-					title: "Gruppe Level 1.2",
-					content: [{
-						title: "Gruppe Level 2.2.1",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 2.2.2",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 2.2.3",
-						content: 'Fields'
-					}]
-				}, {
-					title: "Gruppe Level 1.3",
-					content: [{
-						title: "Gruppe Level 3.2.1",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 3.2.2",
-						content: 'Fields'
-					}, {
-						title: "Gruppe Level 3.2.3",
-						content: 'Fields'
-					}]
-				}]
+				jsonData: _this.props.store.jsonData
 			};
 			return _this;
 		}
@@ -24182,6 +24128,8 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
@@ -24212,7 +24160,7 @@
 
 	    //getinitialState
 	    _this.state = {
-	      jsonData: _this.props.store.jsonData.jsonData
+	      jsonData: _this.props.store.database.jsonData
 	    };
 	    return _this;
 	  }
@@ -24244,21 +24192,29 @@
 	    key: 'loadFileAsText',
 	    value: function loadFileAsText(event) {
 	      var fileToLoad = document.getElementById("fileToLoad").files[0],
-	          fileReader = new FileReader();
+	          fileReader = new FileReader(),
+	          jsonData,
+	          self = this;
 
 	      fileReader.onload = function (fileLoadedEvent) {
 	        var textFromFileLoaded = fileLoadedEvent.target.result;
 
 	        document.getElementById("mainArea").value = textFromFileLoaded;
-	      };
+	        jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
 
+	        self.setState({
+	          jsonData: jsonData
+	        });
+	        self.props.changeJSON(self.state.jsonData);
+	      };
 	      fileReader.readAsText(fileToLoad, "UTF-8");
 	    }
 	  }, {
 	    key: 'handleChange',
 	    value: function handleChange(event) {
+	      var jsonData = JSON.parse(JSON.stringify(eval("(" + event.target.value + ")")));
 	      this.setState({
-	        jsonData: event.target.value
+	        jsonData: jsonData
 	      });
 	    }
 	  }, {
@@ -24267,11 +24223,22 @@
 	      $('#mainArea').val(JSON.stringify(this.state.jsonData, null, 2));
 	    }
 	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      var newJsonData = nextProps.store.database.jsonData,
+	          jsonData = _extends({}, this.state.jsonData);
+
+	      jsonData = newJsonData;
+
+	      this.setState({
+	        jsonData: jsonData
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
 
-	      var textareaValue = $('#mainArea').val();
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'margin-around' },
@@ -24299,7 +24266,7 @@
 	        _react2.default.createElement('input', { type: 'button', onClick: function onClick(e) {
 	            return _this2.loadFileAsText(e);
 	          }, value: 'Load Selected File' }),
-	        _react2.default.createElement('input', { type: 'button', onClick: this.props.changeJSON.bind(null, textareaValue), value: 'Update JSON data' })
+	        _react2.default.createElement('input', { type: 'button', onClick: this.props.changeJSON.bind(null, this.state.jsonData), value: 'Update JSON data' })
 	      );
 	    }
 	  }]);
@@ -24351,7 +24318,7 @@
 	    var _this = _possibleConstructorReturn(this, (DnDField.__proto__ || Object.getPrototypeOf(DnDField)).call(this, props));
 
 	    _this.state = {
-	      jsonData: _this.props.store.jsonData.jsonData
+	      jsonData: _this.props.store.database.jsonData
 	    };
 	    return _this;
 	  }
@@ -25596,7 +25563,7 @@
 	    _this.updateGroupsLevelOneToCopy = _this.updateGroupsLevelOneToCopy.bind(_this);
 
 	    _this.state = {
-	      jsonData: _this.props.store.jsonData.jsonData,
+	      jsonData: _this.props.store.database.jsonData,
 	      accordion: [],
 	      groupsLevelOneToCopy: []
 	    };
@@ -25608,8 +25575,8 @@
 	    value: function componentWillMount() {
 	      var _this2 = this;
 
-	      var newAccordion = this.props.store.accordion.accordion,
-	          newGroupsLevelOneToCopy = this.props.store.accordion.groupsLevelOneToCopy;
+	      var newAccordion = this.props.store.database.accordion,
+	          newGroupsLevelOneToCopy = this.props.store.database.groupsLevelOneToCopy;
 
 	      this.updateAccordion(newAccordion);
 	      this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
@@ -25633,8 +25600,8 @@
 	    value: function componentWillReceiveProps(nextProps) {
 	      var _this3 = this;
 
-	      var newAccordion = nextProps.store.accordion.accordion,
-	          newGroupsLevelOneToCopy = nextProps.store.accordion.groupsLevelOneToCopy;
+	      var newAccordion = nextProps.store.database.accordion,
+	          newGroupsLevelOneToCopy = nextProps.store.database.groupsLevelOneToCopy;
 
 	      this.updateAccordion(newAccordion);
 	      this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
@@ -25840,7 +25807,7 @@
 	    _this.updateMarking = _this.updateMarking.bind(_this);
 
 	    _this.state = {
-	      jsonData: _this.props.store.jsonData.jsonData,
+	      jsonData: _this.props.store.database.jsonData,
 	      subAccordionItems: [],
 	      groupsLevelTwoToCopy: []
 	    };
@@ -25853,7 +25820,7 @@
 	      var _this2 = this;
 
 	      var newItems = nextProps.elem.content,
-	          newGroupsLevelTwoToCopy = nextProps.store.accordion.groupsLevelTwoToCopy;
+	          newGroupsLevelTwoToCopy = nextProps.store.database.groupsLevelTwoToCopy;
 
 	      this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
 	      this.updateSubAccordionItems(newItems);
@@ -25919,7 +25886,7 @@
 	      var _this3 = this;
 
 	      var subAccordion = this.props.elem.content,
-	          newGroupsLevelTwoToCopy = this.props.store.accordion.groupsLevelTwoToCopy;
+	          newGroupsLevelTwoToCopy = this.props.store.database.groupsLevelTwoToCopy;
 
 	      this.updateGroupsLevelTwoToCopy(newGroupsLevelTwoToCopy);
 	      this.updateSubAccordionItems(subAccordion);
@@ -26134,7 +26101,7 @@
 	    _this.cutAndShift = _this.cutAndShift.bind(_this);
 
 	    _this.state = {
-	      jsonData: _this.props.store.jsonData.jsonData,
+	      jsonData: _this.props.store.database.jsonData,
 	      fields: [],
 	      fieldsToCopy: []
 	    };
@@ -26147,7 +26114,7 @@
 	      var _this2 = this;
 
 	      var newFields = nextProps.elem.content,
-	          newFieldsToCopy = nextProps.store.accordion.fieldsToCopy;
+	          newFieldsToCopy = nextProps.store.database.fieldsToCopy;
 
 	      this.updateFieldsToCopy(newFieldsToCopy);
 	      this.updateFields(newFields);
@@ -26244,7 +26211,7 @@
 	      var _this3 = this;
 
 	      var newFields = this.props.elem.content,
-	          newFieldsToCopy = this.props.store.accordion.fieldsToCopy;
+	          newFieldsToCopy = this.props.store.database.fieldsToCopy;
 
 	      this.updateFieldsToCopy(newFieldsToCopy);
 	      this.updateFields(newFields);
@@ -35749,77 +35716,25 @@
 
 	var _reactRouterRedux = __webpack_require__(333);
 
-	var _changeJSON = __webpack_require__(348);
+	var _changeJSONAndAccordion = __webpack_require__(354);
 
-	var _changeJSON2 = _interopRequireDefault(_changeJSON);
-
-	var _changeGroupNumber = __webpack_require__(350);
-
-	var _changeGroupNumber2 = _interopRequireDefault(_changeGroupNumber);
-
-	var _changeAccordion = __webpack_require__(351);
-
-	var _changeAccordion2 = _interopRequireDefault(_changeAccordion);
-
-	var _changeGroupsLevelOneToCopy = __webpack_require__(352);
-
-	var _changeGroupsLevelOneToCopy2 = _interopRequireDefault(_changeGroupsLevelOneToCopy);
+	var _changeJSONAndAccordion2 = _interopRequireDefault(_changeJSONAndAccordion);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var rootReducer = (0, _redux.combineReducers)({
-		groupNumber: _changeGroupNumber2.default,
-		jsonData: _changeJSON2.default,
 		routing: _reactRouterRedux.routerReducer,
-		accordion: _changeAccordion2.default
+		database: _changeJSONAndAccordion2.default
 	});
 
 	exports.default = rootReducer;
 
 /***/ },
-/* 348 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _JSONExample = __webpack_require__(349);
-
-	var _JSONExample2 = _interopRequireDefault(_JSONExample);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var changeJSON = function changeJSON() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { jsonData: _JSONExample2.default };
-		var action = arguments[1];
-
-		switch (action.type) {
-			case "CHANGE_JSON":
-				{
-					console.log('run change_json');
-					state = _extends({}, state, { jsonData: action.jsonData });
-					break;
-				}
-
-			case "CHANGE_GROUP_L1":
-				{
-					console.log('run change_group_l1');
-					state = _extends({}, state, { jsonData: action.jsonData });
-					break;
-				}
-		}
-		return state;
-	};
-
-	exports.default = changeJSON;
-
-/***/ },
-/* 349 */
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -35827,2086 +35742,41 @@
 	Object.defineProperty(exports, "__esModule", {
 	   value: true
 	});
-	var JSONExample = {
-	   "title": "Karpaltunnel Befunde",
+	var EmptyJSON = {
+	   "title": "Titel Fallpauschale",
 	   "valid_from": "2015-01-01",
 	   "valid_to": "2015-12-31",
 	   "groups": [{
-	      "key": "grp_Befundbogen_1",
-	      "title": "Befundbogen 1",
+	      "key": "grp_1_Gruppe_Level_1",
+	      "title": "Gruppe Level 1",
 	      "type": "group",
 	      "groups": [{
-	         "key": "grp_Vorerkrankungen",
-	         "title": "Vorerkrankungen",
-	         "type": "group",
-	         "groups": []
-	      }, {
-	         "key": "grp_Klinische_Untersuchung_Kategorie_1",
-	         "title": "Klinische Untersuchung (Indikationskriterien Kategorie 1)",
-	         "type": "group",
-	         "groups": []
-	      }, {
-	         "key": "grp_Klinische_Untersuchung_Handfunktion",
-	         "title": "Klinische Untersuchung (Handfunktion)",
-	         "type": "group",
-	         "groups": []
-	      }, {
-	         "key": "grp_Klinische_Untersuchung_Kategorie_2",
-	         "title": "Klinische Untersuchung (Indikationskriterien Kategorie 2)",
-	         "type": "group",
-	         "groups": []
+	         "key": "grp_1.1_Gruppe_Level_2",
+	         "title": "Gruppe Level 2",
+	         "type": "group"
 	      }]
-	   }, {
-	      "key": "grp_Befundbogen_2",
-	      "title": "Befundbogen 2",
-	      "type": "group",
-	      "groups": []
-	   }, {
-	      "key": "grp_Befundbogen_3",
-	      "title": "Befundbogen 3",
-	      "type": "group",
-	      "groups": []
 	   }],
 	   "fields": [{
-	      "key": "fld_Code_Vorerkrankungen",
-	      "title": "Code Vorerkrankungen",
+	      "key": "fld_feld_titel",
+	      "title": "Feld Titel",
 	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Vorschaden/ Vorerkrankungen",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Allg_Erkrankungen",
-	      "title": "Allg. Erkrankungen",
-	      "type": "select",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 8,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "multiple": true,
-	         "options": [{
-	            "title": "Diabetes mellitus",
-	            "value": "Diabetes mellitus",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "Hypothyreose",
-	            "value": "Hypothyreose",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "L\xE4ngerfristige Kortisonbehandlung",
-	            "value": "L\xE4ngerfristige Kortisonbehandlung",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "Postmenop. \xD6strogentherapie",
-	            "value": "Postmenop. \xD6strogentherapie",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "Allgemeine Osteoarthritis",
-	            "value": "Allgemeine Osteoarthritis",
-	            "type": "option",
-	            "default": false
-	         }],
-	         "container": {
-	            "source": "",
-	            "sort": "ID",
-	            "desc": false,
-	            "value": "ID",
-	            "title": "New_Container_0_5_2_100_200_5",
-	            "default": [],
-	            "placeholder": "",
-	            "filter": []
-	         }
-	      }
-	   }, {
-	      "key": "fld_Code_Tendovaginitis_stenosans",
-	      "title": "Code_Tendovaginitis_stenosans",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
+	      "group": "grp_1_Gruppe_Level_1|grp_1.1_Gruppe_Level_2",
 	      "cols": 4,
 	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Tendovaginitis stenosans",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Tendovaginitis_stenosans_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "D1",
-	            "value": "D1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D2",
-	            "value": "D2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D3",
-	            "value": "D3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D4",
-	            "value": "D4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D5",
-	            "value": "D5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Tendovaginitis_stenosans_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "D1",
-	            "value": "D1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D2",
-	            "value": "D2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D3",
-	            "value": "D3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D4",
-	            "value": "D4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "D5",
-	            "value": "D5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Code_Rhizarthrose",
-	      "title": "Code_Rhizarthrose",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Rhizarthrose",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Rhizarthrose_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "-",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Rhizarthrose_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "-",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Code_Arthrose_kleine_Langfingergelenke",
-	      "title": "Code_Arthrose kleine Langfingergelenke",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Arthrose kleine Langfingergelenke",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Arthrose_kleine_Langfingergelenke_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "-",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Arthrose_kleine_Langfingergelenke_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "-",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Code_Z_n_distaler_Vorderarmfraktur",
-	      "title": "Code_Z_n_distaler_Vorderarmfraktur",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Z.n. distaler Vorderarmfraktur",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Z_n_distaler_Vorderarmfraktur_rechts",
-	      "title": "rechts",
-	      "type": "check",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Z_n_distaler_Vorderarmfraktur_links",
-	      "title": "links",
-	      "type": "check",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "x",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Code_Z_n__Handwurzel_Mittelhandfraktur",
-	      "title": "Code_Z.n. Handwurzel-/ Mittelhandfraktur",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Z.n. Handwurzel-/ Mittelhandfraktur",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Z_n__Handwurzel_Mittelhandfraktur_rechts",
-	      "title": "rechts",
-	      "type": "check",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "x",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Z_n__Handwurzel_Mittelhandfraktur_links",
-	      "title": "links",
-	      "type": "check",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "x",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Code_Cervicale-Degenerationen_C6_C7",
-	      "title": "Code_Cervicale  Degenerationen C6/C7",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Cervicale Degenerationen C6/C7",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Cervicale-Degenerationen_C6_C7_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Cervicale-Degenerationen_C6_C7_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Befundbogen_1_Vorerkrankungen_sonstige",
-	      "title": "Sonstige",
-	      "type": "textarea",
-	      "group": "grp_Befundbogen_1|grp_Vorerkrankungen",
-	      "cols": 12,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Schmerzhafte_Par\xE4sthesie",
-	      "title": "Code Schmerzhafte Par\xE4sthesie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Schmerzhafte Par\xE4sthesie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Schmerzhafte_Par\xE4sthesie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Schmerzhafte_Par\xE4sthesie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_St\xF6rung_Stero\xE4sthesie",
-	      "title": "Code St\xF6rung Stero\xE4sthesie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "St\xF6rung Stero\xE4sthesie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_St\xF6rung_Stero\xE4sthesie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_St\xF6rung_Stero\xE4sthesie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_N\xE4chtlicher_Handschmerz",
-	      "title": "Code N\xE4chtlicher Handschmerz",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "N\xE4chtlicher Handschmerz",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_N\xE4chtlicher_Handschmerz_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_N\xE4chtlicher_Handschmerz_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Schw\xE4che_Daumenmuskulatur",
-	      "title": "Code Schw\xE4che Daumenmuskulatur",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Schw\xE4che Daumenmuskulatur (Abspreizen/ Opposition/ Thenaratrophie)",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Schw\xE4che_Daumenmuskulatur_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Schw\xE4che_Daumenmuskulatur_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Keine_Besserung_konservativ",
-	      "title": "Code Keine Besserung konservativ",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Keine Besserung unter konservativer Therapie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Keine_Besserung_konservativ_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Keine_Besserung_konservativ_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Klinische_Untersuchung",
-	      "title": "Code Klinische Untersuchung",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "<b>Klinische Untersuchung </b>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Typische_Par\xE4sthesie_Nervus_medianus",
-	      "title": "Code Typische Par\xE4sthesie im autonomen Versorgungsgebiet des Nervus medianus",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Typische Par\xE4sthesie im autonomen Versorgungsgebiet des Nervus medianus",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Typische_Par\xE4sthesie_Nervus_medianus_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Typische_Par\xE4sthesie_Nervus_medianus_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Stereo\xE4sthesie_im_Nervus_medianus",
-	      "title": "Code Stereo\xE4sthesie im Nervus medianus",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Hyp-/ u.-o. Stereo\xE4sthesie im autonomen Versorgungsgebiet des Nervus medianus",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Stereo\xE4sthesie_im_Nervus_medianus_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Stereo\xE4sthesie_im_Nervus_medianus_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Thenaratrophie",
-	      "title": "Code Thenaratrophie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Thenaratrophie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Thenaratrophie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Thenaratrophie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Phalen_Test",
-	      "title": "Code Phalen-Test",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Phalen-Test",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Phalen_Test_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Phalen_Test_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Tinnel_Hoffmann_Test",
-	      "title": "Code Tinnel-Hoffmann-Test",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Tinnel-Hoffmann-Test",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Tinnel_Hoffmann_Test_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Tinnel_Hoffmann_Test_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_1",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Motorik",
-	      "title": "Code Motorik",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "<b>Motorik</b>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Faustschluss",
-	      "title": "Code Faustschluss",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Faustschluss<br><i>Finger-Hohlhand-Abstand [cm]</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Faustschluss_rechts",
-	      "title": "rechts",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Faustschluss_Space_3",
-	      "title": "Code Faustschluss Space 3",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 3,
-	      "clearBefore": false,
 	      "clearAfter": false,
 	      "parameters": {
 	         "css": "",
 	         "html": "",
 	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Faustschluss_links",
-	      "title": "links",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Daumenopposition",
-	      "title": "Code Daumenopposition",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Daumenopposition<br><i>Daumen-Kleinfinger-Probe (Abstand in cm) </i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Daumenopposition_rechts",
-	      "title": "rechts",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Daumenopposition_Space_3",
-	      "title": "Code Daumenopposition Space 3",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 3,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Daumenopposition_links",
-	      "title": "links",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen",
-	      "title": "Code Abspreizung Daumen in der Handebene",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Abspreizung Daumen in der Handebene<br><i>Neutral-0-Methode</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_rechts_Wert_1",
-	      "title": "rechts Wert 1",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_rechts_Wert_2",
-	      "title": "Wert 2",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_rechts_Wert_3",
-	      "title": "Wert 3",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_Space_1",
-	      "title": "Code Abspreizung Daumen Space 1",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_links_Wert_1",
-	      "title": "links Wert 1",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_links_Wert_2",
-	      "title": "Wert 2",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Abspreizung_Daumen_links_Wert_3",
-	      "title": "Wert 3",
-	      "type": "text",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 1,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "class": ""
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff_intakt",
-	      "title": "Code Spitzgriff intakt",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Spitzgriff intakt",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff_intakt_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff_intakt_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Kraftentfaltung",
-	      "title": "Code Kraftentfaltung",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "<b>Kraftentfaltung</b>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Abduktion_des_Daumens",
-	      "title": "Code Abduktion des Daumens",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Abduktion des Daumens<br><i>Janda 1 - 5</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Abduktion_des_Daumens_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Abduktion_des_Daumens_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Opposition_des_Daumens",
-	      "title": "Code Opposition des Daumens",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Opposition des Daumens<br><i>Janda 1 - 5</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Opposition_des_Daumens_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Opposition_des_Daumens_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Grob_Kraftgriff",
-	      "title": "Code Grob-/ Kraftgriff",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Grob-/ Kraftgriff<br><i>Janda 1 - 5</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Grob_Kraftgriff_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Grob_Kraftgriff_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff",
-	      "title": "Code Spitzgriff",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Spitzgriff<br><i>Janda 1 - 5</i>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Spitzgriff_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Handfunktion",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "J 1",
-	            "value": "Janda 1",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 2",
-	            "value": "Janda 2",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 3",
-	            "value": "Janda 3",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 4",
-	            "value": "Janda 4",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "J 5",
-	            "value": "Janda 5",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Klinische_Untersuchung_Kategorie_2_Info",
-	      "title": "Code Klinische_Untersuchung_Kategorie_2_Info",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 12,
-	      "clearBefore": false,
-	      "clearAfter": true,
-	      "parameters": {
-	         "css": "",
-	         "html": "<font color='#ff0000'><b>Indikation zur KTS-Operation  ist gegeben,  wenn  1 von 2 Zeichen der Kategorie 2 positiv ist.</b><br><i><ul>    <li>Elektrophysiologische Diagnostik: positiv        <ul>            <li>vorrangig: Motorische / Sensible Neurographie</li>        </ul>    </li>    <li>Bildgebung:        <ul>            <li>Neurosonographie: positiv</li>        </ul>    </li></ul></i></font>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Elektrophysiologie",
-	      "title": "Code Elektrophysiologie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "<b>Elektrophysiologie</b>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Motorische_Neurographie",
-	      "title": "Code Motorische Neurographie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Motorische Neurographie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Motorische_Neurographie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Motorische_Neurographie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Sensible_Neurographie",
-	      "title": "Code Sensible Neurographie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Sensible Neurographie",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Sensible_Neurographie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Sensible_Neurographie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Ggfs_Sonstige_Neurographie",
-	      "title": "Code Ggfs. Sonstige Neurographie",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Ggfs. Sonstige",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Ggfs_Sonstige_Neurographie_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Ggfs_Sonstige_Neurographie_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Bildgebung",
-	      "title": "Code Bildgebung",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "<b>Elektrophysiologie</b>",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Neurosonographie_N_medianus",
-	      "title": "Code Neurosonographie_N_medianus",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Neurosonographie N. medianus",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Neurosonographie_N_medianus_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Neurosonographie_N_medianus_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Bildgebung_Sonstige",
-	      "title": "Code Bildgebung_Sonstige",
-	      "type": "code",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": true,
-	      "clearAfter": false,
-	      "parameters": {
-	         "css": "",
-	         "html": "Sonstige",
-	         "js": ""
-	      }
-	   }, {
-	      "key": "fld_Bildgebung_Sonstige_rechts",
-	      "title": "rechts",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
-	      }
-	   }, {
-	      "key": "fld_Bildgebung_Sonstige_links",
-	      "title": "links",
-	      "type": "radio",
-	      "group": "grp_Befundbogen_1|grp_Klinische_Untersuchung_Kategorie_2",
-	      "cols": 4,
-	      "clearBefore": false,
-	      "clearAfter": false,
-	      "parameters": {
-	         "inline": true,
-	         "inlineBreak": true,
-	         "options": [{
-	            "title": "positiv",
-	            "value": "+",
-	            "type": "option",
-	            "default": false
-	         }, {
-	            "title": "negativ",
-	            "value": "0",
-	            "type": "option",
-	            "default": false
-	         }]
 	      }
 	   }]
 	};
 
-	exports.default = JSONExample;
+	exports.default = EmptyJSON;
 
 /***/ },
-/* 350 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	// state = [[1, 4, 5], [3, 2, 4]] means number of group level one: 2, group level two: 3, fields: numbers
-
-	var groupNumber = [[1]];
-
-	var changeGroupNumber = function changeGroupNumber() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { groupNumber: groupNumber };
-		var action = arguments[1];
-
-		switch (action.type) {
-			case "CHANGE_NUMBER":
-				{
-					state = _extends({}, state, { groupNumber: action.groupNumber });
-					break;
-				}
-		}
-		return state;
-	};
-
-	exports.default = changeGroupNumber;
-
-/***/ },
-/* 351 */
+/* 353 */,
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37919,9 +35789,9 @@
 
 	var _helpers = __webpack_require__(243);
 
-	var _JSONExample = __webpack_require__(349);
+	var _EmptyJSON = __webpack_require__(352);
 
-	var _JSONExample2 = _interopRequireDefault(_JSONExample);
+	var _EmptyJSON2 = _interopRequireDefault(_EmptyJSON);
 
 	var _helpers2 = __webpack_require__(243);
 
@@ -37929,16 +35799,29 @@
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-	var accordion = (0, _helpers.setAccordionItems)(_JSONExample2.default),
+	var accordion = (0, _helpers.setAccordionItems)(_EmptyJSON2.default),
 	    groupsLevelOneToCopy = [],
 	    groupsLevelTwoToCopy = [],
 	    fieldsToCopy = [];
 
-	var changeAccordion = function changeAccordion() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { accordion: accordion, groupsLevelOneToCopy: groupsLevelOneToCopy, groupsLevelTwoToCopy: groupsLevelTwoToCopy, fieldsToCopy: fieldsToCopy };
+	var changeJSONAndAccordion = function changeJSONAndAccordion() {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { jsonData: _EmptyJSON2.default, accordion: accordion, groupsLevelOneToCopy: groupsLevelOneToCopy, groupsLevelTwoToCopy: groupsLevelTwoToCopy, fieldsToCopy: fieldsToCopy };
 		var action = arguments[1];
 
 		switch (action.type) {
+			case "CHANGE_JSON":
+				{
+					var _jsonData = action.jsonData;
+
+					var _accordion = [].concat(_toConsumableArray(state.accordion));
+
+					_accordion = (0, _helpers.setAccordionItems)(_jsonData);
+					console.log('run change_json');
+
+					state = _extends({}, state, { jsonData: _jsonData, accordion: _accordion });
+					break;
+				}
+
 			case "CHANGE_FULL_ACCORDION":
 				{
 					console.log('change full accordion');
@@ -37952,24 +35835,26 @@
 					    index = action.index,
 					    buttonId = 'btn_group_level_one_mark_' + element.key;
 					var _groupsLevelOneToCopy = action.groupsLevelOneToCopy,
-					    _accordion = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion2 = [].concat(_toConsumableArray(state.accordion)),
 					    indexForElementToRemove = void 0;
 
 
-					_accordion = (0, _helpers2.removeArrayElement)(_accordion, index);
-					if (element.marked) {
-						$('#' + buttonId).removeClass('marked');
+					if (_accordion2.length > 1) {
+						_accordion2 = (0, _helpers2.removeArrayElement)(_accordion2, index);
+						if (element.marked) {
+							$('#' + buttonId).removeClass('marked');
 
-						indexForElementToRemove = _groupsLevelOneToCopy.map(function (key, i) {
-							return key;
-						}).indexOf(element.key);
+							indexForElementToRemove = _groupsLevelOneToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(element.key);
 
-						_groupsLevelOneToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy, indexForElementToRemove);
+							_groupsLevelOneToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy, indexForElementToRemove);
+						}
+
+						// delete group and field to copy!
 					}
 
-					// delete group and field to copy!
-
-					state = _extends({}, state, { accordion: _accordion, groupsLevelOneToCopy: _groupsLevelOneToCopy });
+					state = _extends({}, state, { accordion: _accordion2, groupsLevelOneToCopy: _groupsLevelOneToCopy });
 					return state;
 					break;
 				}
@@ -37983,30 +35868,32 @@
 
 					var subAccordionItems = action.subAccordionItems,
 					    _groupsLevelTwoToCopy = action.groupsLevelTwoToCopy,
-					    _accordion2 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion3 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove = void 0,
 					    indexSubAccordion = void 0;
 
-					subAccordionItems = (0, _helpers2.removeArrayElement)(subAccordionItems, _index);
-					if (_element.marked) {
-						$('#' + _buttonId).removeClass('marked');
+					if (subAccordionItems.length > 1) {
+						subAccordionItems = (0, _helpers2.removeArrayElement)(subAccordionItems, _index);
+						if (_element.marked) {
+							$('#' + _buttonId).removeClass('marked');
 
-						_indexForElementToRemove = _groupsLevelTwoToCopy.map(function (key, i) {
-							return key;
-						}).indexOf(_element.key);
+							_indexForElementToRemove = _groupsLevelTwoToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(_element.key);
 
-						_groupsLevelTwoToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy, _indexForElementToRemove);
+							_groupsLevelTwoToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy, _indexForElementToRemove);
+						}
+
+						//delete field to copy!
+
+						indexSubAccordion = _accordion3.map(function (subAccordion, i) {
+							return subAccordion.key;
+						}).indexOf(groupLevelOneKey);
+
+						_accordion3[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion3[indexSubAccordion].content, _index);
 					}
 
-					//delete field to copy!
-
-					indexSubAccordion = _accordion2.map(function (subAccordion, i) {
-						return subAccordion.key;
-					}).indexOf(groupLevelOneKey);
-
-					_accordion2[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion2[indexSubAccordion].content, _index);
-
-					state = _extends({}, state, { accordion: _accordion2, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
+					state = _extends({}, state, { accordion: _accordion3, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
 					return state;
 					break;
 				}
@@ -38021,32 +35908,34 @@
 
 					var fields = action.fields,
 					    _fieldsToCopy = action.fieldsToCopy,
-					    _accordion3 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove2 = void 0,
 					    _indexSubAccordion = void 0,
 					    indexAccordionSection = void 0;
 
-					if (_element2.marked) {
-						$('#' + _buttonId2).removeClass('marked');
+					if (fields.length > 1) {
+						if (_element2.marked) {
+							$('#' + _buttonId2).removeClass('marked');
 
-						_indexForElementToRemove2 = _fieldsToCopy.map(function (key, i) {
-							return key;
-						}).indexOf(_element2.key);
+							_indexForElementToRemove2 = _fieldsToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(_element2.key);
 
-						_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
+							_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
+						}
+
+						_indexSubAccordion = _accordion4.map(function (subAccordion, i) {
+							return subAccordion.key;
+						}).indexOf(_groupLevelOneKey);
+
+						indexAccordionSection = _accordion4[_indexSubAccordion].content.map(function (section, i) {
+							return section.key;
+						}).indexOf(groupLevelTwoKey);
+
+						_accordion4[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion4[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
 					}
 
-					_indexSubAccordion = _accordion3.map(function (subAccordion, i) {
-						return subAccordion.key;
-					}).indexOf(_groupLevelOneKey);
-
-					indexAccordionSection = _accordion3[_indexSubAccordion].content.map(function (section, i) {
-						return section.key;
-					}).indexOf(groupLevelTwoKey);
-
-					_accordion3[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion3[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
-
-					state = _extends({}, state, { accordion: _accordion3, fieldsToCopy: _fieldsToCopy });
+					state = _extends({}, state, { accordion: _accordion4, fieldsToCopy: _fieldsToCopy });
 					return state;
 					break;
 				}
@@ -38058,7 +35947,7 @@
 					    _buttonId3 = 'btn_group_level_one_mark_' + _element3.key;
 
 					var _groupsLevelOneToCopy2 = action.groupsLevelOneToCopy,
-					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove3 = void 0;
 
 
@@ -38068,10 +35957,10 @@
 						}).indexOf(_element3.key);
 
 						_groupsLevelOneToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy2, _indexForElementToRemove3);
-						_accordion4[_index3].marked = false;
+						_accordion5[_index3].marked = false;
 					} else {
-						_accordion4[_index3].marked = true;
-						_groupsLevelOneToCopy2.push(_accordion4[_index3].key);
+						_accordion5[_index3].marked = true;
+						_groupsLevelOneToCopy2.push(_accordion5[_index3].key);
 					}
 
 					state = _extends({}, state, { groupsLevelOneToCopy: _groupsLevelOneToCopy2 });
@@ -38088,11 +35977,11 @@
 
 					var _subAccordionItems = action.subAccordionItems,
 					    _groupsLevelTwoToCopy2 = action.groupsLevelTwoToCopy,
-					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove4 = void 0,
 					    _indexSubAccordion2 = void 0;
 
-					_indexSubAccordion2 = _accordion5.map(function (subAccordion, i) {
+					_indexSubAccordion2 = _accordion6.map(function (subAccordion, i) {
 						return subAccordion.key;
 					}).indexOf(_groupLevelOneKey2);
 
@@ -38101,16 +35990,16 @@
 							return key;
 						}).indexOf(_element4.key);
 
-						_accordion5[_indexSubAccordion2].content[_index4].marked = false;
+						_accordion6[_indexSubAccordion2].content[_index4].marked = false;
 						_groupsLevelTwoToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy2, _indexForElementToRemove4);
 					} else {
-						_accordion5[_indexSubAccordion2].content[_index4].marked = true;
+						_accordion6[_indexSubAccordion2].content[_index4].marked = true;
 						_groupsLevelTwoToCopy2.push(_subAccordionItems[_index4].key);
 					}
 
-					_accordion5[_indexSubAccordion2].content[_index4]['open'] = false;
+					_accordion6[_indexSubAccordion2].content[_index4]['open'] = false;
 
-					state = _extends({}, state, { accordion: _accordion5, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
+					state = _extends({}, state, { accordion: _accordion6, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
 					return state;
 					break;
 				}
@@ -38125,17 +36014,17 @@
 
 					var _fields = action.fields,
 					    _fieldsToCopy2 = action.fieldsToCopy,
-					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion7 = [].concat(_toConsumableArray(state.accordion)),
 					    field = void 0,
 					    _indexForElementToRemove5 = void 0,
 					    _indexSubAccordion3 = void 0,
 					    _indexAccordionSection = void 0;
 
-					_indexSubAccordion3 = _accordion6.map(function (subAccordion, i) {
+					_indexSubAccordion3 = _accordion7.map(function (subAccordion, i) {
 						return subAccordion.key;
 					}).indexOf(_groupLevelOneKey3);
 
-					_indexAccordionSection = _accordion6[_indexSubAccordion3].content.map(function (section, i) {
+					_indexAccordionSection = _accordion7[_indexSubAccordion3].content.map(function (section, i) {
 						return section.key;
 					}).indexOf(_groupLevelTwoKey);
 
@@ -38145,20 +36034,17 @@
 						}).indexOf(_element5.key);
 
 						_fieldsToCopy2 = (0, _helpers2.removeArrayElement)(_fieldsToCopy2, _indexForElementToRemove5);
-						_accordion6[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
+						_accordion7[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
 						$('#' + _buttonId5).removeClass('marked');
 					} else {
-						_accordion6[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
+						_accordion7[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
 						_fieldsToCopy2.push(_fields[_index5].key);
 						$('#' + _buttonId5).addClass('marked');
 					}
 
-					_accordion6[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
+					_accordion7[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
 
-					console.log('mjui:', _accordion6[_indexSubAccordion3].content[_indexAccordionSection]);
-					console.log('mjuixs:', _accordion6[_indexSubAccordion3]);
-
-					state = _extends({}, state, { accordion: _accordion6, fieldsToCopy: _fieldsToCopy2 });
+					state = _extends({}, state, { accordion: _accordion7, fieldsToCopy: _fieldsToCopy2 });
 					return state;
 					break;
 				}
@@ -38169,43 +36055,7 @@
 		return state;
 	};
 
-	exports.default = changeAccordion;
-
-/***/ },
-/* 352 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _JSONExample = __webpack_require__(349);
-
-	var _JSONExample2 = _interopRequireDefault(_JSONExample);
-
-	var _helpers = __webpack_require__(243);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var changeGroupsLevelOneToCopy = function changeGroupsLevelOneToCopy() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-		var action = arguments[1];
-
-		switch (action.type) {
-			case "DELETE_FROM_GROUP_LEVEL_ONE_TO_COPY":
-				{
-					console.log('g1');
-				}
-
-			default:
-				return state;
-		}
-		return state;
-	};
-
-	exports.default = changeGroupsLevelOneToCopy;
+	exports.default = changeJSONAndAccordion;
 
 /***/ }
 /******/ ]);

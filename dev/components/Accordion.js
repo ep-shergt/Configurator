@@ -14,15 +14,15 @@ class Accordion extends Component {
     this.updateGroupsLevelOneToCopy = this.updateGroupsLevelOneToCopy.bind(this);
 
     this.state = {
-      jsonData: this.props.store.jsonData.jsonData,
+      jsonData: this.props.store.database.jsonData,
       accordion: [],
       groupsLevelOneToCopy: []
     };
   }
 
   componentWillMount() {
-    let newAccordion = this.props.store.accordion.accordion,
-        newGroupsLevelOneToCopy = this.props.store.accordion.groupsLevelOneToCopy;
+    let newAccordion = this.props.store.database.accordion,
+        newGroupsLevelOneToCopy = this.props.store.database.groupsLevelOneToCopy;
 
     this.updateAccordion(newAccordion);
     this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
@@ -42,8 +42,8 @@ class Accordion extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let newAccordion = nextProps.store.accordion.accordion,
-        newGroupsLevelOneToCopy = nextProps.store.accordion.groupsLevelOneToCopy;
+    let newAccordion = nextProps.store.database.accordion,
+        newGroupsLevelOneToCopy = nextProps.store.database.groupsLevelOneToCopy;
 
     this.updateAccordion(newAccordion);
     this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);

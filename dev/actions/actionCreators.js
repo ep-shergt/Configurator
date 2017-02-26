@@ -8,15 +8,6 @@ export function changeJSON(jsonData) {
 	}
 }
 
-export function changeFullAccordion(accordion, element, index) {
-	return {
-		type: 'CHANGE_FULL_ACCORDION',
-		accordion,
-		element,
-		index
-	}
-}
-
 //*******************************************************************************
 
 // Markers
@@ -90,12 +81,6 @@ export function deleteField(fields, fieldsToCopy, groupLevelOneKey, groupLevelTw
 
 //**************************************************************************************************************************
 
-export function changeGroupNumber(groupNumber) {
-	return {
-		type: 'CHANGE_NUMBER',
-		groupNumber
-	}
-}
 
 //import * as user from "../actionCreators";
 //import { importJSON } from "../actionCreators"

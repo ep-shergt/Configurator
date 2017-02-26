@@ -12,7 +12,7 @@ export default class Textbox extends Component {
 
     //getinitialState
     this.state = {
-      jsonData: this.props.store.jsonData.jsonData
+      jsonData: this.props.store.database.jsonData
     };
   }
 
@@ -39,20 +39,28 @@ export default class Textbox extends Component {
  
   loadFileAsText(event) {
       var fileToLoad = document.getElementById("fileToLoad").files[0],
-          fileReader = new FileReader();
+          fileReader = new FileReader(),
+          jsonData,
+          self = this;
 
       fileReader.onload = function(fileLoadedEvent)  {
           var textFromFileLoaded = fileLoadedEvent.target.result;
 
           document.getElementById("mainArea").value = textFromFileLoaded;
+          jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
+
+          self.setState({
+            jsonData
+          });
+          self.props.changeJSON(self.state.jsonData);
       };
-      
       fileReader.readAsText(fileToLoad, "UTF-8");
   }
 
   handleChange(event){
+    let jsonData = JSON.parse(JSON.stringify(eval("(" + event.target.value + ")")));
     this.setState({
-      jsonData: event.target.value
+      jsonData
     });
   }
 
@@ -60,9 +68,19 @@ export default class Textbox extends Component {
     $('#mainArea').val(JSON.stringify(this.state.jsonData, null, 2));
   }
 
+  componentWillReceiveProps(nextProps) {
+    let newJsonData = nextProps.store.database.jsonData,
+        jsonData = {...this.state.jsonData};
+
+    jsonData = newJsonData;
+
+    this.setState({
+      jsonData
+    });
+  }
+
 
   render() {
-    const textareaValue = $('#mainArea').val();
     return (
       <div className="margin-around">  
         <div>Text to Save</div>
@@ -73,7 +91,7 @@ export default class Textbox extends Component {
             <div>Select a File to Load:</div>
             <input type="file" id="fileToLoad" />
             <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Load Selected File"/>
-            <input type="button" onClick={this.props.changeJSON.bind(null, textareaValue)} value="Update JSON data"/>     
+            <input type="button" onClick={this.props.changeJSON.bind(null, this.state.jsonData)} value="Update JSON data"/>     
       </div>
     );
   };

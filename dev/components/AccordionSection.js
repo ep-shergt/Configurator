@@ -19,7 +19,7 @@ class AccordionSection extends Component {
     this.cutAndShift = this.cutAndShift.bind(this);
 
     this.state = {
-      jsonData: this.props.store.jsonData.jsonData,
+      jsonData: this.props.store.database.jsonData,
       fields: [],
       fieldsToCopy: []
     };
@@ -27,7 +27,7 @@ class AccordionSection extends Component {
 
   componentWillReceiveProps(nextProps) {
     let newFields = nextProps.elem.content,
-        newFieldsToCopy = nextProps.store.accordion.fieldsToCopy;
+        newFieldsToCopy = nextProps.store.database.fieldsToCopy;
 
     this.updateFieldsToCopy(newFieldsToCopy);    
     this.updateFields(newFields);
@@ -121,7 +121,7 @@ class AccordionSection extends Component {
 
   componentWillMount() {
     let newFields = this.props.elem.content,
-        newFieldsToCopy = this.props.store.accordion.fieldsToCopy;
+        newFieldsToCopy = this.props.store.database.fieldsToCopy;
 
     this.updateFieldsToCopy(newFieldsToCopy)
     this.updateFields(newFields);

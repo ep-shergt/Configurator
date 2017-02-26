@@ -1,5 +1,5 @@
 import { setAccordionItems } from './../helpers.js';
-import jsonData from './../data/JSONExample';
+import jsonData from './../data/EmptyJSON';
 import { removeArrayElement } from './../helpers';
 
 let accordion = setAccordionItems(jsonData),
@@ -7,8 +7,19 @@ let accordion = setAccordionItems(jsonData),
 	groupsLevelTwoToCopy = [],
 	fieldsToCopy = [];
 
-const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTwoToCopy, fieldsToCopy}, action) => {
+const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCopy, groupsLevelTwoToCopy, fieldsToCopy}, action) => {	
 	switch(action.type){
+		case "CHANGE_JSON": {
+			const {jsonData} = action;
+			let accordion = [...state.accordion];
+
+			accordion = setAccordionItems(jsonData);
+			console.log('run change_json');
+
+			state = {...state, jsonData, accordion}
+			break;
+		}
+
 		case "CHANGE_FULL_ACCORDION": {
 			console.log('change full accordion');
 			state = {...state, accordion: action.accordion}
@@ -22,18 +33,21 @@ const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTw
 		    	accordion = [...state.accordion],
 		    	indexForElementToRemove;
 
-	        accordion = removeArrayElement(accordion, index);
-	        if (element.marked) {
-		    	$('#' + buttonId).removeClass('marked');
+		    if (accordion.length > 1) {
+		        accordion = removeArrayElement(accordion, index);
+		        if (element.marked) {
+			    	$('#' + buttonId).removeClass('marked');
 
-		     	indexForElementToRemove = groupsLevelOneToCopy.map((key, i) => {
-        			return key;
-      			}).indexOf(element.key);
+			     	indexForElementToRemove = groupsLevelOneToCopy.map((key, i) => {
+	        			return key;
+	      			}).indexOf(element.key);
 
-      			groupsLevelOneToCopy = removeArrayElement(groupsLevelOneToCopy, indexForElementToRemove);
+	      			groupsLevelOneToCopy = removeArrayElement(groupsLevelOneToCopy, indexForElementToRemove);
+			    }
+
+			    // delete group and field to copy!
+
 		    }
-
-		    // delete group and field to copy!
 
 			state = {...state, accordion, groupsLevelOneToCopy};
 			return state;
@@ -48,24 +62,26 @@ const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTw
 		    	indexForElementToRemove,
 		    	indexSubAccordion;
 
-	        subAccordionItems = removeArrayElement(subAccordionItems, index);
-	        if (element.marked) {
-		    	$('#' + buttonId).removeClass('marked');
+		    if (subAccordionItems.length > 1) {
+		        subAccordionItems = removeArrayElement(subAccordionItems, index);
+		        if (element.marked) {
+			    	$('#' + buttonId).removeClass('marked');
 
-		     	indexForElementToRemove = groupsLevelTwoToCopy.map((key, i) => {
-        			return key;
-      			}).indexOf(element.key);
+			     	indexForElementToRemove = groupsLevelTwoToCopy.map((key, i) => {
+	        			return key;
+	      			}).indexOf(element.key);
 
-      			groupsLevelTwoToCopy = removeArrayElement(groupsLevelTwoToCopy, indexForElementToRemove);
+	      			groupsLevelTwoToCopy = removeArrayElement(groupsLevelTwoToCopy, indexForElementToRemove);
+			    }
+
+			    //delete field to copy!
+
+			    indexSubAccordion = accordion.map((subAccordion, i) => {
+	    			return subAccordion.key;
+	  			}).indexOf(groupLevelOneKey);
+
+				accordion[indexSubAccordion].content = removeArrayElement(accordion[indexSubAccordion].content, index);
 		    }
-
-		    //delete field to copy!
-
-		    indexSubAccordion = accordion.map((subAccordion, i) => {
-    			return subAccordion.key;
-  			}).indexOf(groupLevelOneKey);
-
-			accordion[indexSubAccordion].content = removeArrayElement(accordion[indexSubAccordion].content, index);
 		
 			state = {...state, accordion, groupsLevelTwoToCopy};
 			return state;
@@ -81,25 +97,28 @@ const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTw
 				indexSubAccordion,
 				indexAccordionSection;
 
-			if (element.marked) {
-		        $('#' + buttonId).removeClass('marked');
+			if (fields.length > 1) {
+				if (element.marked) {
+			        $('#' + buttonId).removeClass('marked');
 
-		        indexForElementToRemove = fieldsToCopy.map((key, i) => {
-		            return key;
-		        }).indexOf(element.key);
+			        indexForElementToRemove = fieldsToCopy.map((key, i) => {
+			            return key;
+			        }).indexOf(element.key);
 
-		        fieldsToCopy = removeArrayElement(fieldsToCopy, indexForElementToRemove);
-		    }
+			        fieldsToCopy = removeArrayElement(fieldsToCopy, indexForElementToRemove);
+			    }
 
-			indexSubAccordion = accordion.map((subAccordion, i) => {
-    			return subAccordion.key;
-  			}).indexOf(groupLevelOneKey);
+				indexSubAccordion = accordion.map((subAccordion, i) => {
+	    			return subAccordion.key;
+	  			}).indexOf(groupLevelOneKey);
 
-  			indexAccordionSection = accordion[indexSubAccordion].content.map((section, i) => {
-    			return section.key;
-  			}).indexOf(groupLevelTwoKey);
+	  			indexAccordionSection = accordion[indexSubAccordion].content.map((section, i) => {
+	    			return section.key;
+	  			}).indexOf(groupLevelTwoKey);
 
-  			accordion[indexSubAccordion].content[indexAccordionSection].fields = removeArrayElement(accordion[indexSubAccordion].content[indexAccordionSection].fields, index);
+	  			accordion[indexSubAccordion].content[indexAccordionSection].fields = removeArrayElement(accordion[indexSubAccordion].content[indexAccordionSection].fields, index);			
+			}		
+
 					
 			state = {...state, accordion, fieldsToCopy};
 		    return state;
@@ -198,10 +217,6 @@ const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTw
 
 		    accordion[indexSubAccordion].content[indexAccordionSection]['open'] = true;
 
-
-		    console.log('mjui:', accordion[indexSubAccordion].content[indexAccordionSection]);
-		    console.log('mjuixs:', accordion[indexSubAccordion]);
-
 			state = {...state, accordion, fieldsToCopy};
 		    return state;
 		    break;
@@ -213,4 +228,4 @@ const changeAccordion = (state = {accordion, groupsLevelOneToCopy, groupsLevelTw
 	return state;
 }
 
-export default changeAccordion;
+export default changeJSONAndAccordion;

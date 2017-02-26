@@ -9,7 +9,7 @@ class DnDField extends Component {
 
     //getinitialState
     this.state = {
-      jsonData: this.props.store.jsonData.jsonData
+      jsonData: this.props.store.database.jsonData
     };
   }
 
