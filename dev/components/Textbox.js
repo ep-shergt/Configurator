@@ -86,6 +86,7 @@ export default class Textbox extends Component {
     this.setState({
       jsonData
     });
+
     setTimeout(() => {
       $('#mainArea').val(JSON.stringify(this.state.jsonData, null, 2));
     }, 200);
@@ -102,7 +103,7 @@ export default class Textbox extends Component {
             <input type="button" onClick={(e) => this.saveTextAsFile(e)} value="Text speichern als"/>
             <div>Datei auswählen:</div>
             <input type="file" id="fileToLoad" />
-            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Datei auswählen"/>
+            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Ausgewählte Datei laden"/>
             <div id="fileError" className="display-hidden error-style">Warnung: Keine Datei ausgewählt!</div>
             <input type="button" onClick={this.props.changeJSON.bind(null, this.state.jsonData)} value="JSON aktualisieren"/>
             <input type="button" onClick={this.props.initializeJSON.bind(null, this.state.jsonData)} value="NEU"/>     

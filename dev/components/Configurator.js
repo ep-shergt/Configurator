@@ -17,6 +17,27 @@ class Configurator extends Component {
     	$('#inputMainTitle').val(this.state.jsonData.title);
   	}
 
+  	handleMainTitleChange(event){
+	    let newTitle = event.target.value;
+	    console.log('newtitle: ', newTitle);
+	    this.props.changeMainTitle(newTitle);
+  	}
+
+  	componentWillReceiveProps(nextProps) {
+	    let newJsonData = nextProps.store.database.jsonData,
+	        jsonData = {...this.state.jsonData};
+
+	    jsonData = newJsonData;
+
+	    this.setState({
+	        jsonData
+	    });
+
+	    setTimeout(() => {
+	        $('#inputMainTitle').val(this.state.jsonData.title);
+	    }, 200);
+	 }
+
     render() {
     	return (
     		<div id="configuratorWrapper">
@@ -28,7 +49,7 @@ class Configurator extends Component {
 					<form>
 					  <div className="input-group">
 					    <span className="input-group-addon">Titel</span>
-					    <input id="inputMainTitle" type="text" className="form-control" name="inputMainTitle" placeholder="Titel der Fallpauschale" />
+					    <input id="inputMainTitle" onChange={this.handleMainTitleChange.bind(this)} type="text" className="form-control" name="inputMainTitle" placeholder="Titel der Fallpauschale" />
 					  </div>
 					</form>
 				</div>

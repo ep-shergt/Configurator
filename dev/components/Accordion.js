@@ -12,6 +12,8 @@ class Accordion extends Component {
     this.updateMarking = this.updateMarking.bind(this);
     this.updateAccordion = this.updateAccordion.bind(this);
     this.updateGroupsLevelOneToCopy = this.updateGroupsLevelOneToCopy.bind(this);
+    this.updateJsonData = this.updateJsonData.bind(this);
+
 
     this.state = {
       jsonData: this.props.store.database.jsonData,
@@ -42,11 +44,13 @@ class Accordion extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let newAccordion = nextProps.store.database.accordion,
+    let newJsonData = nextProps.store.database.jsonData,
+        newAccordion = nextProps.store.database.accordion,
         newGroupsLevelOneToCopy = nextProps.store.database.groupsLevelOneToCopy;
 
     this.updateAccordion(newAccordion);
     this.updateGroupsLevelOneToCopy(newGroupsLevelOneToCopy);
+    this.updateJsonData(newJsonData);
 
     setTimeout(() => {
       this.updateMarking(newAccordion)
@@ -70,6 +74,16 @@ class Accordion extends Component {
 
     this.setState({ 
       groupsLevelOneToCopy
+    });
+  }
+
+  updateJsonData(newJsonData) {
+    let jsonData = {...this.state.jsonData};
+
+    jsonData = newJsonData;
+
+    this.setState({ 
+      jsonData
     });
   }
 

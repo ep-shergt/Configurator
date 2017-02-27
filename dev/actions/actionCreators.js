@@ -15,6 +15,14 @@ export function initializeJSON(jsonData) {
 	}
 }
 
+export function changeMainTitle(mainTitle) {
+	console.log(mainTitle);
+	return {
+		type: 'CHANGE_MAIN_TITLE',
+		mainTitle
+	}
+}
+
 //*******************************************************************************
 
 // Markers

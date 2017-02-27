@@ -20,6 +20,19 @@ const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCo
 			break;
 		}
 
+		case "CHANGE_MAIN_TITLE": {
+			const {mainTitle} = action;
+			let	accordion = [...state.accordion],
+				jsonData = {...state.jsonData};
+
+			console.log('title', mainTitle);
+
+			jsonData.title = mainTitle;
+
+			state = {...state, jsonData, accordion}
+			break;
+		}
+
 		case "INITIALIZE_JSON": {
 			let accordion = [...state.accordion];
 
