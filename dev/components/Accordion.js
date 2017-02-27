@@ -95,6 +95,19 @@ class Accordion extends Component {
 
     return (
       <div className="accordion">
+        <div className="title-wrapper-centering">
+          <ul className="ul-accordion">
+            <li className="li-accordion">
+              <div className="title-style">{this.state.jsonData.title}</div>
+              <div className="subtitle-style">{this.state.jsonData.valid_from} bis {this.state.jsonData.valid_to}</div>
+            </li>
+            <li className="li-accordion li-title-positioning">
+              <button id="btnMainTitle" type="button" className="btn btn-default btn-xs li-title-btn">
+                <i className="fa fa-wrench" aria-hidden="true"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
         <div>
           {this.state.accordion.map((elem, i) => {
             let buttonId = "btn_group_level_one_mark_" + elem.key;
@@ -112,6 +125,7 @@ class Accordion extends Component {
                         <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                       </button>
                       <ul className="dropdown-menu">
+                        <li><a href="#"><i className="fa-margin fa fa-wrench" aria-hidden="true"></i> Bearbeiten</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i>Einfügen</a></li>

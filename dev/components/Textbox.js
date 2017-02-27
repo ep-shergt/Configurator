@@ -38,23 +38,32 @@ export default class Textbox extends Component {
   }
  
   loadFileAsText(event) {
-      var fileToLoad = document.getElementById("fileToLoad").files[0],
-          fileReader = new FileReader(),
-          jsonData,
-          self = this;
+      if (!($('#fileError').hasClass('display-hidden'))) {
+        $('#fileError').addClass('display-hidden');
+      }
 
-      fileReader.onload = function(fileLoadedEvent)  {
-          var textFromFileLoaded = fileLoadedEvent.target.result;
+      try {
+        var fileToLoad = document.getElementById("fileToLoad").files[0],
+            fileReader = new FileReader(),
+            jsonData,
+            self = this;
 
-          document.getElementById("mainArea").value = textFromFileLoaded;
-          jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
+        fileReader.onload = function(fileLoadedEvent)  {
+            var textFromFileLoaded = fileLoadedEvent.target.result;
 
-          self.setState({
-            jsonData
-          });
-          self.props.changeJSON(self.state.jsonData);
-      };
-      fileReader.readAsText(fileToLoad, "UTF-8");
+            document.getElementById("mainArea").value = textFromFileLoaded;
+            jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
+
+            self.setState({
+              jsonData
+            });
+            self.props.changeJSON(self.state.jsonData);
+        };
+        fileReader.readAsText(fileToLoad, "UTF-8");
+      } catch (err) {
+        console.log('%c Fehler: Keine Datei ausgewählt!', 'color: red; font-weight: bold');
+        $('#fileError').removeClass('display-hidden');
+      }
   }
 
   handleChange(event){
@@ -77,6 +86,9 @@ export default class Textbox extends Component {
     this.setState({
       jsonData
     });
+    setTimeout(() => {
+      $('#mainArea').val(JSON.stringify(this.state.jsonData, null, 2));
+    }, 200);
   }
 
 
@@ -85,13 +97,15 @@ export default class Textbox extends Component {
       <div className="margin-around">  
         <div>Text to Save</div>
         <textarea id="mainArea" className="jsonbox" onChange={this.handleChange.bind(this)}></textarea>     
-            <div>Filename to Save As:</div>
+            <div>Dateinamen zum Speichern festlegen:</div>
             <input type="text" id="inputFileNameToSaveAs" />
-            <input type="button" onClick={(e) => this.saveTextAsFile(e)} value="Save Text to File"/>
-            <div>Select a File to Load:</div>
+            <input type="button" onClick={(e) => this.saveTextAsFile(e)} value="Text speichern als"/>
+            <div>Datei auswählen:</div>
             <input type="file" id="fileToLoad" />
-            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Load Selected File"/>
-            <input type="button" onClick={this.props.changeJSON.bind(null, this.state.jsonData)} value="Update JSON data"/>     
+            <input type="button" onClick={(e) => this.loadFileAsText(e)} value="Datei auswählen"/>
+            <div id="fileError" className="display-hidden error-style">Warnung: Keine Datei ausgewählt!</div>
+            <input type="button" onClick={this.props.changeJSON.bind(null, this.state.jsonData)} value="JSON aktualisieren"/>
+            <input type="button" onClick={this.props.initializeJSON.bind(null, this.state.jsonData)} value="NEU"/>     
       </div>
     );
   };

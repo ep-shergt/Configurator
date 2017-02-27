@@ -23894,6 +23894,7 @@
 		value: true
 	});
 	exports.changeJSON = changeJSON;
+	exports.initializeJSON = initializeJSON;
 	exports.markGroupLevelOneForCopy = markGroupLevelOneForCopy;
 	exports.markGroupLevelTwoForCopy = markGroupLevelTwoForCopy;
 	exports.markFieldToCopy = markFieldToCopy;
@@ -23906,6 +23907,13 @@
 	function changeJSON(jsonData) {
 		return {
 			type: 'CHANGE_JSON',
+			jsonData: jsonData
+		};
+	}
+
+	function initializeJSON(jsonData) {
+		return {
+			type: 'INITIALIZE_JSON',
 			jsonData: jsonData
 		};
 	}
@@ -24017,9 +24025,9 @@
 
 	var _reactTabs = __webpack_require__(229);
 
-	var _Accordion = __webpack_require__(239);
+	var _Configurator = __webpack_require__(350);
 
-	var _Accordion2 = _interopRequireDefault(_Accordion);
+	var _Configurator2 = _interopRequireDefault(_Configurator);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24039,7 +24047,7 @@
 			var _this = _possibleConstructorReturn(this, (MainComponent.__proto__ || Object.getPrototypeOf(MainComponent)).call(this, props));
 
 			_this.state = {
-				jsonData: _this.props.store.jsonData
+				jsonData: _this.props.store.database.jsonData
 			};
 			return _this;
 		}
@@ -24081,20 +24089,7 @@
 								_react2.default.createElement(
 									_reactTabs.TabPanel,
 									null,
-									_react2.default.createElement(
-										'div',
-										{ className: 'col-md-8' },
-										_react2.default.createElement(_Accordion2.default, this.props)
-									),
-									_react2.default.createElement(
-										'div',
-										{ className: 'col-md-4 editor-panel' },
-										_react2.default.createElement(
-											'h2',
-											null,
-											'Panel'
-										)
-									)
+									_react2.default.createElement(_Configurator2.default, this.props)
 								),
 								_react2.default.createElement(
 									_reactTabs.TabPanel,
@@ -24191,23 +24186,32 @@
 	  }, {
 	    key: 'loadFileAsText',
 	    value: function loadFileAsText(event) {
-	      var fileToLoad = document.getElementById("fileToLoad").files[0],
-	          fileReader = new FileReader(),
-	          jsonData,
-	          self = this;
+	      if (!$('#fileError').hasClass('display-hidden')) {
+	        $('#fileError').addClass('display-hidden');
+	      }
 
-	      fileReader.onload = function (fileLoadedEvent) {
-	        var textFromFileLoaded = fileLoadedEvent.target.result;
+	      try {
+	        var fileToLoad = document.getElementById("fileToLoad").files[0],
+	            fileReader = new FileReader(),
+	            jsonData,
+	            self = this;
 
-	        document.getElementById("mainArea").value = textFromFileLoaded;
-	        jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
+	        fileReader.onload = function (fileLoadedEvent) {
+	          var textFromFileLoaded = fileLoadedEvent.target.result;
 
-	        self.setState({
-	          jsonData: jsonData
-	        });
-	        self.props.changeJSON(self.state.jsonData);
-	      };
-	      fileReader.readAsText(fileToLoad, "UTF-8");
+	          document.getElementById("mainArea").value = textFromFileLoaded;
+	          jsonData = JSON.parse(JSON.stringify(eval("(" + textFromFileLoaded + ")")));
+
+	          self.setState({
+	            jsonData: jsonData
+	          });
+	          self.props.changeJSON(self.state.jsonData);
+	        };
+	        fileReader.readAsText(fileToLoad, "UTF-8");
+	      } catch (err) {
+	        console.log('%c Fehler: Keine Datei ausgewählt!', 'color: red; font-weight: bold');
+	        $('#fileError').removeClass('display-hidden');
+	      }
 	    }
 	  }, {
 	    key: 'handleChange',
@@ -24225,6 +24229,8 @@
 	  }, {
 	    key: 'componentWillReceiveProps',
 	    value: function componentWillReceiveProps(nextProps) {
+	      var _this2 = this;
+
 	      var newJsonData = nextProps.store.database.jsonData,
 	          jsonData = _extends({}, this.state.jsonData);
 
@@ -24233,11 +24239,14 @@
 	      this.setState({
 	        jsonData: jsonData
 	      });
+	      setTimeout(function () {
+	        $('#mainArea').val(JSON.stringify(_this2.state.jsonData, null, 2));
+	      }, 200);
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -24251,22 +24260,28 @@
 	        _react2.default.createElement(
 	          'div',
 	          null,
-	          'Filename to Save As:'
+	          'Dateinamen zum Speichern festlegen:'
 	        ),
 	        _react2.default.createElement('input', { type: 'text', id: 'inputFileNameToSaveAs' }),
 	        _react2.default.createElement('input', { type: 'button', onClick: function onClick(e) {
-	            return _this2.saveTextAsFile(e);
-	          }, value: 'Save Text to File' }),
+	            return _this3.saveTextAsFile(e);
+	          }, value: 'Text speichern als' }),
 	        _react2.default.createElement(
 	          'div',
 	          null,
-	          'Select a File to Load:'
+	          'Datei ausw\xE4hlen:'
 	        ),
 	        _react2.default.createElement('input', { type: 'file', id: 'fileToLoad' }),
 	        _react2.default.createElement('input', { type: 'button', onClick: function onClick(e) {
-	            return _this2.loadFileAsText(e);
-	          }, value: 'Load Selected File' }),
-	        _react2.default.createElement('input', { type: 'button', onClick: this.props.changeJSON.bind(null, this.state.jsonData), value: 'Update JSON data' })
+	            return _this3.loadFileAsText(e);
+	          }, value: 'Datei ausw\xE4hlen' }),
+	        _react2.default.createElement(
+	          'div',
+	          { id: 'fileError', className: 'display-hidden error-style' },
+	          'Warnung: Keine Datei ausgew\xE4hlt!'
+	        ),
+	        _react2.default.createElement('input', { type: 'button', onClick: this.props.changeJSON.bind(null, this.state.jsonData), value: 'JSON aktualisieren' }),
+	        _react2.default.createElement('input', { type: 'button', onClick: this.props.initializeJSON.bind(null, this.state.jsonData), value: 'NEU' })
 	      );
 	    }
 	  }]);
@@ -25663,6 +25678,39 @@
 	        { className: 'accordion' },
 	        _react2.default.createElement(
 	          'div',
+	          { className: 'title-wrapper-centering' },
+	          _react2.default.createElement(
+	            'ul',
+	            { className: 'ul-accordion' },
+	            _react2.default.createElement(
+	              'li',
+	              { className: 'li-accordion' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'title-style' },
+	                this.state.jsonData.title
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'subtitle-style' },
+	                this.state.jsonData.valid_from,
+	                ' bis ',
+	                this.state.jsonData.valid_to
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'li',
+	              { className: 'li-accordion li-title-positioning' },
+	              _react2.default.createElement(
+	                'button',
+	                { id: 'btnMainTitle', type: 'button', className: 'btn btn-default btn-xs li-title-btn' },
+	                _react2.default.createElement('i', { className: 'fa fa-wrench', 'aria-hidden': 'true' })
+	              )
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
 	          null,
 	          this.state.accordion.map(function (elem, i) {
 	            var _React$createElement;
@@ -25699,6 +25747,16 @@
 	                    _react2.default.createElement(
 	                      'ul',
 	                      { className: 'dropdown-menu' },
+	                      _react2.default.createElement(
+	                        'li',
+	                        null,
+	                        _react2.default.createElement(
+	                          'a',
+	                          { href: '#' },
+	                          _react2.default.createElement('i', { className: 'fa-margin fa fa-wrench', 'aria-hidden': 'true' }),
+	                          ' Bearbeiten'
+	                        )
+	                      ),
 	                      _react2.default.createElement(
 	                        'li',
 	                        null,
@@ -25987,6 +26045,16 @@
 	                          _react2.default.createElement(
 	                            'ul',
 	                            { className: 'dropdown-menu' },
+	                            _react2.default.createElement(
+	                              'li',
+	                              null,
+	                              _react2.default.createElement(
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa-margin fa fa-wrench', 'aria-hidden': 'true' }),
+	                                ' Bearbeiten'
+	                              )
+	                            ),
 	                            _react2.default.createElement(
 	                              'li',
 	                              null,
@@ -35716,7 +35784,7 @@
 
 	var _reactRouterRedux = __webpack_require__(333);
 
-	var _changeJSONAndAccordion = __webpack_require__(354);
+	var _changeJSONAndAccordion = __webpack_require__(348);
 
 	var _changeJSONAndAccordion2 = _interopRequireDefault(_changeJSONAndAccordion);
 
@@ -35730,11 +35798,299 @@
 	exports.default = rootReducer;
 
 /***/ },
-/* 348 */,
-/* 349 */,
-/* 350 */,
-/* 351 */,
-/* 352 */
+/* 348 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _helpers = __webpack_require__(243);
+
+	var _EmptyJSON = __webpack_require__(349);
+
+	var _EmptyJSON2 = _interopRequireDefault(_EmptyJSON);
+
+	var _helpers2 = __webpack_require__(243);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var accordion = (0, _helpers.setAccordionItems)(_EmptyJSON2.default),
+	    groupsLevelOneToCopy = [],
+	    groupsLevelTwoToCopy = [],
+	    fieldsToCopy = [];
+
+	var changeJSONAndAccordion = function changeJSONAndAccordion() {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { jsonData: _EmptyJSON2.default, accordion: accordion, groupsLevelOneToCopy: groupsLevelOneToCopy, groupsLevelTwoToCopy: groupsLevelTwoToCopy, fieldsToCopy: fieldsToCopy };
+		var action = arguments[1];
+
+		switch (action.type) {
+			case "CHANGE_JSON":
+				{
+					var _jsonData = action.jsonData;
+
+					var _accordion = [].concat(_toConsumableArray(state.accordion));
+
+					_accordion = (0, _helpers.setAccordionItems)(_jsonData);
+					console.log('run change_json');
+
+					state = _extends({}, state, { jsonData: _jsonData, accordion: _accordion });
+					break;
+				}
+
+			case "INITIALIZE_JSON":
+				{
+					var _accordion2 = [].concat(_toConsumableArray(state.accordion));
+
+					_accordion2 = (0, _helpers.setAccordionItems)(_EmptyJSON2.default);
+
+					state = _extends({}, state, { jsonData: _EmptyJSON2.default, accordion: _accordion2 });
+					break;
+				}
+
+			case "CHANGE_FULL_ACCORDION":
+				{
+					console.log('change full accordion');
+					state = _extends({}, state, { accordion: action.accordion });
+					break;
+				}
+
+			case "DELETE_GROUP_L1":
+				{
+					var element = action.element,
+					    index = action.index,
+					    buttonId = 'btn_group_level_one_mark_' + element.key;
+					var _groupsLevelOneToCopy = action.groupsLevelOneToCopy,
+					    _accordion3 = [].concat(_toConsumableArray(state.accordion)),
+					    indexForElementToRemove = void 0;
+
+
+					if (_accordion3.length > 1) {
+						_accordion3 = (0, _helpers2.removeArrayElement)(_accordion3, index);
+						if (element.marked) {
+							$('#' + buttonId).removeClass('marked');
+
+							indexForElementToRemove = _groupsLevelOneToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(element.key);
+
+							_groupsLevelOneToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy, indexForElementToRemove);
+						}
+
+						// delete group and field to copy!
+					}
+
+					state = _extends({}, state, { accordion: _accordion3, groupsLevelOneToCopy: _groupsLevelOneToCopy });
+					return state;
+					break;
+				}
+
+			case "DELETE_GROUP_L2":
+				{
+					var groupLevelOneKey = action.groupLevelOneKey,
+					    _element = action.element,
+					    _index = action.index,
+					    _buttonId = 'btn_group_level_two_mark_' + _element.key;
+
+					var subAccordionItems = action.subAccordionItems,
+					    _groupsLevelTwoToCopy = action.groupsLevelTwoToCopy,
+					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove = void 0,
+					    indexSubAccordion = void 0;
+
+					if (subAccordionItems.length > 1) {
+						subAccordionItems = (0, _helpers2.removeArrayElement)(subAccordionItems, _index);
+						if (_element.marked) {
+							$('#' + _buttonId).removeClass('marked');
+
+							_indexForElementToRemove = _groupsLevelTwoToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(_element.key);
+
+							_groupsLevelTwoToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy, _indexForElementToRemove);
+						}
+
+						//delete field to copy!
+
+						indexSubAccordion = _accordion4.map(function (subAccordion, i) {
+							return subAccordion.key;
+						}).indexOf(groupLevelOneKey);
+
+						_accordion4[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion4[indexSubAccordion].content, _index);
+					}
+
+					state = _extends({}, state, { accordion: _accordion4, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
+					return state;
+					break;
+				}
+
+			case "DELETE_FIELD":
+				{
+					var _groupLevelOneKey = action.groupLevelOneKey,
+					    groupLevelTwoKey = action.groupLevelTwoKey,
+					    _element2 = action.element,
+					    _index2 = action.index,
+					    _buttonId2 = "btn_field_" + _element2.key;
+
+					var fields = action.fields,
+					    _fieldsToCopy = action.fieldsToCopy,
+					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove2 = void 0,
+					    _indexSubAccordion = void 0,
+					    indexAccordionSection = void 0;
+
+					if (fields.length > 1) {
+						if (_element2.marked) {
+							$('#' + _buttonId2).removeClass('marked');
+
+							_indexForElementToRemove2 = _fieldsToCopy.map(function (key, i) {
+								return key;
+							}).indexOf(_element2.key);
+
+							_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
+						}
+
+						_indexSubAccordion = _accordion5.map(function (subAccordion, i) {
+							return subAccordion.key;
+						}).indexOf(_groupLevelOneKey);
+
+						indexAccordionSection = _accordion5[_indexSubAccordion].content.map(function (section, i) {
+							return section.key;
+						}).indexOf(groupLevelTwoKey);
+
+						_accordion5[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion5[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
+					}
+
+					state = _extends({}, state, { accordion: _accordion5, fieldsToCopy: _fieldsToCopy });
+					return state;
+					break;
+				}
+
+			case "MARK_GROUP_L1":
+				{
+					var _element3 = action.element,
+					    _index3 = action.index,
+					    _buttonId3 = 'btn_group_level_one_mark_' + _element3.key;
+
+					var _groupsLevelOneToCopy2 = action.groupsLevelOneToCopy,
+					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove3 = void 0;
+
+
+					if (_element3.marked) {
+						_indexForElementToRemove3 = _groupsLevelOneToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element3.key);
+
+						_groupsLevelOneToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy2, _indexForElementToRemove3);
+						_accordion6[_index3].marked = false;
+					} else {
+						_accordion6[_index3].marked = true;
+						_groupsLevelOneToCopy2.push(_accordion6[_index3].key);
+					}
+
+					state = _extends({}, state, { groupsLevelOneToCopy: _groupsLevelOneToCopy2 });
+					return state;
+					break;
+				}
+
+			case "MARK_GROUP_L2":
+				{
+					var _groupLevelOneKey2 = action.groupLevelOneKey,
+					    _element4 = action.element,
+					    _index4 = action.index,
+					    _buttonId4 = 'btn_group_level_two_mark_' + _element4.key;
+
+					var _subAccordionItems = action.subAccordionItems,
+					    _groupsLevelTwoToCopy2 = action.groupsLevelTwoToCopy,
+					    _accordion7 = [].concat(_toConsumableArray(state.accordion)),
+					    _indexForElementToRemove4 = void 0,
+					    _indexSubAccordion2 = void 0;
+
+					_indexSubAccordion2 = _accordion7.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(_groupLevelOneKey2);
+
+					if (_element4.marked) {
+						_indexForElementToRemove4 = _groupsLevelTwoToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element4.key);
+
+						_accordion7[_indexSubAccordion2].content[_index4].marked = false;
+						_groupsLevelTwoToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy2, _indexForElementToRemove4);
+					} else {
+						_accordion7[_indexSubAccordion2].content[_index4].marked = true;
+						_groupsLevelTwoToCopy2.push(_subAccordionItems[_index4].key);
+					}
+
+					_accordion7[_indexSubAccordion2].content[_index4]['open'] = false;
+
+					state = _extends({}, state, { accordion: _accordion7, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
+					return state;
+					break;
+				}
+
+			case "MARK_FIELD":
+				{
+					var _groupLevelOneKey3 = action.groupLevelOneKey,
+					    _groupLevelTwoKey = action.groupLevelTwoKey,
+					    _element5 = action.element,
+					    _index5 = action.index,
+					    _buttonId5 = "btn_field_" + _element5.key;
+
+					var _fields = action.fields,
+					    _fieldsToCopy2 = action.fieldsToCopy,
+					    _accordion8 = [].concat(_toConsumableArray(state.accordion)),
+					    field = void 0,
+					    _indexForElementToRemove5 = void 0,
+					    _indexSubAccordion3 = void 0,
+					    _indexAccordionSection = void 0;
+
+					_indexSubAccordion3 = _accordion8.map(function (subAccordion, i) {
+						return subAccordion.key;
+					}).indexOf(_groupLevelOneKey3);
+
+					_indexAccordionSection = _accordion8[_indexSubAccordion3].content.map(function (section, i) {
+						return section.key;
+					}).indexOf(_groupLevelTwoKey);
+
+					if (_element5.marked) {
+						_indexForElementToRemove5 = _fieldsToCopy2.map(function (key, i) {
+							return key;
+						}).indexOf(_element5.key);
+
+						_fieldsToCopy2 = (0, _helpers2.removeArrayElement)(_fieldsToCopy2, _indexForElementToRemove5);
+						_accordion8[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
+						$('#' + _buttonId5).removeClass('marked');
+					} else {
+						_accordion8[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
+						_fieldsToCopy2.push(_fields[_index5].key);
+						$('#' + _buttonId5).addClass('marked');
+					}
+
+					_accordion8[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
+
+					state = _extends({}, state, { accordion: _accordion8, fieldsToCopy: _fieldsToCopy2 });
+					return state;
+					break;
+				}
+
+			default:
+				return state;
+		}
+		return state;
+	};
+
+	exports.default = changeJSONAndAccordion;
+
+/***/ },
+/* 349 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -35775,8 +36131,7 @@
 	exports.default = EmptyJSON;
 
 /***/ },
-/* 353 */,
-/* 354 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35785,277 +36140,88 @@
 		value: true
 	});
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _helpers = __webpack_require__(243);
+	var _react = __webpack_require__(1);
 
-	var _EmptyJSON = __webpack_require__(352);
+	var _react2 = _interopRequireDefault(_react);
 
-	var _EmptyJSON2 = _interopRequireDefault(_EmptyJSON);
+	var _reactDom = __webpack_require__(32);
 
-	var _helpers2 = __webpack_require__(243);
+	var _Accordion = __webpack_require__(239);
+
+	var _Accordion2 = _interopRequireDefault(_Accordion);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var accordion = (0, _helpers.setAccordionItems)(_EmptyJSON2.default),
-	    groupsLevelOneToCopy = [],
-	    groupsLevelTwoToCopy = [],
-	    fieldsToCopy = [];
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	var changeJSONAndAccordion = function changeJSONAndAccordion() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { jsonData: _EmptyJSON2.default, accordion: accordion, groupsLevelOneToCopy: groupsLevelOneToCopy, groupsLevelTwoToCopy: groupsLevelTwoToCopy, fieldsToCopy: fieldsToCopy };
-		var action = arguments[1];
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-		switch (action.type) {
-			case "CHANGE_JSON":
-				{
-					var _jsonData = action.jsonData;
+	var Configurator = function (_Component) {
+		_inherits(Configurator, _Component);
 
-					var _accordion = [].concat(_toConsumableArray(state.accordion));
+		function Configurator(props) {
+			_classCallCheck(this, Configurator);
 
-					_accordion = (0, _helpers.setAccordionItems)(_jsonData);
-					console.log('run change_json');
+			//getinitialState
+			var _this = _possibleConstructorReturn(this, (Configurator.__proto__ || Object.getPrototypeOf(Configurator)).call(this, props));
 
-					state = _extends({}, state, { jsonData: _jsonData, accordion: _accordion });
-					break;
-				}
-
-			case "CHANGE_FULL_ACCORDION":
-				{
-					console.log('change full accordion');
-					state = _extends({}, state, { accordion: action.accordion });
-					break;
-				}
-
-			case "DELETE_GROUP_L1":
-				{
-					var element = action.element,
-					    index = action.index,
-					    buttonId = 'btn_group_level_one_mark_' + element.key;
-					var _groupsLevelOneToCopy = action.groupsLevelOneToCopy,
-					    _accordion2 = [].concat(_toConsumableArray(state.accordion)),
-					    indexForElementToRemove = void 0;
-
-
-					if (_accordion2.length > 1) {
-						_accordion2 = (0, _helpers2.removeArrayElement)(_accordion2, index);
-						if (element.marked) {
-							$('#' + buttonId).removeClass('marked');
-
-							indexForElementToRemove = _groupsLevelOneToCopy.map(function (key, i) {
-								return key;
-							}).indexOf(element.key);
-
-							_groupsLevelOneToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy, indexForElementToRemove);
-						}
-
-						// delete group and field to copy!
-					}
-
-					state = _extends({}, state, { accordion: _accordion2, groupsLevelOneToCopy: _groupsLevelOneToCopy });
-					return state;
-					break;
-				}
-
-			case "DELETE_GROUP_L2":
-				{
-					var groupLevelOneKey = action.groupLevelOneKey,
-					    _element = action.element,
-					    _index = action.index,
-					    _buttonId = 'btn_group_level_two_mark_' + _element.key;
-
-					var subAccordionItems = action.subAccordionItems,
-					    _groupsLevelTwoToCopy = action.groupsLevelTwoToCopy,
-					    _accordion3 = [].concat(_toConsumableArray(state.accordion)),
-					    _indexForElementToRemove = void 0,
-					    indexSubAccordion = void 0;
-
-					if (subAccordionItems.length > 1) {
-						subAccordionItems = (0, _helpers2.removeArrayElement)(subAccordionItems, _index);
-						if (_element.marked) {
-							$('#' + _buttonId).removeClass('marked');
-
-							_indexForElementToRemove = _groupsLevelTwoToCopy.map(function (key, i) {
-								return key;
-							}).indexOf(_element.key);
-
-							_groupsLevelTwoToCopy = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy, _indexForElementToRemove);
-						}
-
-						//delete field to copy!
-
-						indexSubAccordion = _accordion3.map(function (subAccordion, i) {
-							return subAccordion.key;
-						}).indexOf(groupLevelOneKey);
-
-						_accordion3[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion3[indexSubAccordion].content, _index);
-					}
-
-					state = _extends({}, state, { accordion: _accordion3, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
-					return state;
-					break;
-				}
-
-			case "DELETE_FIELD":
-				{
-					var _groupLevelOneKey = action.groupLevelOneKey,
-					    groupLevelTwoKey = action.groupLevelTwoKey,
-					    _element2 = action.element,
-					    _index2 = action.index,
-					    _buttonId2 = "btn_field_" + _element2.key;
-
-					var fields = action.fields,
-					    _fieldsToCopy = action.fieldsToCopy,
-					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
-					    _indexForElementToRemove2 = void 0,
-					    _indexSubAccordion = void 0,
-					    indexAccordionSection = void 0;
-
-					if (fields.length > 1) {
-						if (_element2.marked) {
-							$('#' + _buttonId2).removeClass('marked');
-
-							_indexForElementToRemove2 = _fieldsToCopy.map(function (key, i) {
-								return key;
-							}).indexOf(_element2.key);
-
-							_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
-						}
-
-						_indexSubAccordion = _accordion4.map(function (subAccordion, i) {
-							return subAccordion.key;
-						}).indexOf(_groupLevelOneKey);
-
-						indexAccordionSection = _accordion4[_indexSubAccordion].content.map(function (section, i) {
-							return section.key;
-						}).indexOf(groupLevelTwoKey);
-
-						_accordion4[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion4[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
-					}
-
-					state = _extends({}, state, { accordion: _accordion4, fieldsToCopy: _fieldsToCopy });
-					return state;
-					break;
-				}
-
-			case "MARK_GROUP_L1":
-				{
-					var _element3 = action.element,
-					    _index3 = action.index,
-					    _buttonId3 = 'btn_group_level_one_mark_' + _element3.key;
-
-					var _groupsLevelOneToCopy2 = action.groupsLevelOneToCopy,
-					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
-					    _indexForElementToRemove3 = void 0;
-
-
-					if (_element3.marked) {
-						_indexForElementToRemove3 = _groupsLevelOneToCopy2.map(function (key, i) {
-							return key;
-						}).indexOf(_element3.key);
-
-						_groupsLevelOneToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy2, _indexForElementToRemove3);
-						_accordion5[_index3].marked = false;
-					} else {
-						_accordion5[_index3].marked = true;
-						_groupsLevelOneToCopy2.push(_accordion5[_index3].key);
-					}
-
-					state = _extends({}, state, { groupsLevelOneToCopy: _groupsLevelOneToCopy2 });
-					return state;
-					break;
-				}
-
-			case "MARK_GROUP_L2":
-				{
-					var _groupLevelOneKey2 = action.groupLevelOneKey,
-					    _element4 = action.element,
-					    _index4 = action.index,
-					    _buttonId4 = 'btn_group_level_two_mark_' + _element4.key;
-
-					var _subAccordionItems = action.subAccordionItems,
-					    _groupsLevelTwoToCopy2 = action.groupsLevelTwoToCopy,
-					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
-					    _indexForElementToRemove4 = void 0,
-					    _indexSubAccordion2 = void 0;
-
-					_indexSubAccordion2 = _accordion6.map(function (subAccordion, i) {
-						return subAccordion.key;
-					}).indexOf(_groupLevelOneKey2);
-
-					if (_element4.marked) {
-						_indexForElementToRemove4 = _groupsLevelTwoToCopy2.map(function (key, i) {
-							return key;
-						}).indexOf(_element4.key);
-
-						_accordion6[_indexSubAccordion2].content[_index4].marked = false;
-						_groupsLevelTwoToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy2, _indexForElementToRemove4);
-					} else {
-						_accordion6[_indexSubAccordion2].content[_index4].marked = true;
-						_groupsLevelTwoToCopy2.push(_subAccordionItems[_index4].key);
-					}
-
-					_accordion6[_indexSubAccordion2].content[_index4]['open'] = false;
-
-					state = _extends({}, state, { accordion: _accordion6, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
-					return state;
-					break;
-				}
-
-			case "MARK_FIELD":
-				{
-					var _groupLevelOneKey3 = action.groupLevelOneKey,
-					    _groupLevelTwoKey = action.groupLevelTwoKey,
-					    _element5 = action.element,
-					    _index5 = action.index,
-					    _buttonId5 = "btn_field_" + _element5.key;
-
-					var _fields = action.fields,
-					    _fieldsToCopy2 = action.fieldsToCopy,
-					    _accordion7 = [].concat(_toConsumableArray(state.accordion)),
-					    field = void 0,
-					    _indexForElementToRemove5 = void 0,
-					    _indexSubAccordion3 = void 0,
-					    _indexAccordionSection = void 0;
-
-					_indexSubAccordion3 = _accordion7.map(function (subAccordion, i) {
-						return subAccordion.key;
-					}).indexOf(_groupLevelOneKey3);
-
-					_indexAccordionSection = _accordion7[_indexSubAccordion3].content.map(function (section, i) {
-						return section.key;
-					}).indexOf(_groupLevelTwoKey);
-
-					if (_element5.marked) {
-						_indexForElementToRemove5 = _fieldsToCopy2.map(function (key, i) {
-							return key;
-						}).indexOf(_element5.key);
-
-						_fieldsToCopy2 = (0, _helpers2.removeArrayElement)(_fieldsToCopy2, _indexForElementToRemove5);
-						_accordion7[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
-						$('#' + _buttonId5).removeClass('marked');
-					} else {
-						_accordion7[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
-						_fieldsToCopy2.push(_fields[_index5].key);
-						$('#' + _buttonId5).addClass('marked');
-					}
-
-					_accordion7[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
-
-					state = _extends({}, state, { accordion: _accordion7, fieldsToCopy: _fieldsToCopy2 });
-					return state;
-					break;
-				}
-
-			default:
-				return state;
+			_this.state = {
+				jsonData: _this.props.store.database.jsonData
+			};
+			return _this;
 		}
-		return state;
-	};
 
-	exports.default = changeJSONAndAccordion;
+		_createClass(Configurator, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				$('#inputMainTitle').val(this.state.jsonData.title);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'div',
+					{ id: 'configuratorWrapper' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-8' },
+						_react2.default.createElement(_Accordion2.default, this.props)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'col-md-4 editor-panel' },
+						_react2.default.createElement(
+							'h2',
+							null,
+							'Panel'
+						),
+						_react2.default.createElement(
+							'form',
+							null,
+							_react2.default.createElement(
+								'div',
+								{ className: 'input-group' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'input-group-addon' },
+									'Titel'
+								),
+								_react2.default.createElement('input', { id: 'inputMainTitle', type: 'text', className: 'form-control', name: 'inputMainTitle', placeholder: 'Titel der Fallpauschale' })
+							)
+						)
+					)
+				);
+			}
+		}]);
+
+		return Configurator;
+	}(_react.Component);
+
+	exports.default = Configurator;
 
 /***/ }
 /******/ ]);

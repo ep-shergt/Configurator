@@ -146,6 +146,7 @@ class SubAccordion extends Component {
                               <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                             </button>
                             <ul className="dropdown-menu">
+                              <li><a href="#"><i className="fa-margin fa fa-wrench" aria-hidden="true"></i> Bearbeiten</a></li>
                               <li><a href="#"><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element</a></li>
                               <li><a href="#"><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden</a></li>
                               <li><a href="#"><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i>Einfügen</a></li>

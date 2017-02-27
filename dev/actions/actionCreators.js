@@ -8,6 +8,13 @@ export function changeJSON(jsonData) {
 	}
 }
 
+export function initializeJSON(jsonData) {
+	return {
+		type: 'INITIALIZE_JSON',
+		jsonData
+	}
+}
+
 //*******************************************************************************
 
 // Markers

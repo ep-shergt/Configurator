@@ -20,6 +20,15 @@ const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCo
 			break;
 		}
 
+		case "INITIALIZE_JSON": {
+			let accordion = [...state.accordion];
+
+			accordion = setAccordionItems(jsonData);
+
+			state = {...state, jsonData, accordion}
+			break;
+		}
+
 		case "CHANGE_FULL_ACCORDION": {
 			console.log('change full accordion');
 			state = {...state, accordion: action.accordion}

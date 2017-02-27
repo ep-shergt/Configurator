@@ -195,4 +195,73 @@ ul.button-list>li {
 .field-text {
 	color: midnightblue;
 }
+.display-hidden {
+	display: none;
+}
+
+.error-style {
+	padding: 5px;
+	color: firebrick;
+	font-weight: bold;
+}
+
+.title-style {
+    text-align: center;
+    font-family: 'quicksand';
+    font-size: 23px;
+    font-weight: bolder;
+    color: #D0F8FF;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF,
+             0 0 20px #A5F1FF, 0 0 30px #A5F1FF,
+             0 0 40px #A5F1FF;
+}
+
+.subtitle-style {
+	margin-bottom: 20px;
+    text-align: center;
+    font-family: 'quicksand';
+    font-size: 12px;
+    color: #D0F8FF;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF,
+             0 0 20px #A5F1FF, 0 0 30px #A5F1FF,
+             0 0 40px #A5F1FF;
+}
+
+.ul-accordion {
+	list-style-type: none;
+	margin: 0 auto;
+}
+
+.title-wrapper-centering {
+	text-align: center
+}
+
+.li-accordion {
+	display: inline-block;
+}
+
+.li-title-positioning {
+	margin-left: 10px;
+}
+
+.li-title-btn {
+	margin-bottom: 48px;
+	background: inherit;
+	border: none !important;
+}
+
+.li-title-btn:hover, .li-title-btn:active, .li-title-btn:focus {
+	background: inherit !important;
+	border: none !important;
+	outline: none !important;
+}
+
+.react-tabs [role=tab] {
+	background: inherit !important;
+}
+
+.react-tabs [role=tab][aria-selected=false] {
+	opacity: 0.5;
+}
+
 
