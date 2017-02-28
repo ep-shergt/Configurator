@@ -16,10 +16,31 @@ export function initializeJSON(jsonData) {
 }
 
 export function changeMainTitle(mainTitle) {
-	console.log(mainTitle);
 	return {
 		type: 'CHANGE_MAIN_TITLE',
 		mainTitle
+	}
+}
+
+export function changeStartDate(startDate) {
+	return {
+		type: 'CHANGE_START_DATE',
+		startDate
+	}
+}
+
+export function changeEndDate(endDate) {
+	return {
+		type: 'CHANGE_END_DATE',
+		endDate
+	}
+}
+
+export function changeGroupLevelOneTitle(gOneTitle, gOneKey) {
+	return {
+		type: 'CHANGE_GROUP_LEVEL_ONE_TITLE',
+		gOneTitle,
+		gOneKey
 	}
 }
 

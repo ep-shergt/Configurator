@@ -23896,6 +23896,9 @@
 	exports.changeJSON = changeJSON;
 	exports.initializeJSON = initializeJSON;
 	exports.changeMainTitle = changeMainTitle;
+	exports.changeStartDate = changeStartDate;
+	exports.changeEndDate = changeEndDate;
+	exports.changeGroupLevelOneTitle = changeGroupLevelOneTitle;
 	exports.markGroupLevelOneForCopy = markGroupLevelOneForCopy;
 	exports.markGroupLevelTwoForCopy = markGroupLevelTwoForCopy;
 	exports.markFieldToCopy = markFieldToCopy;
@@ -23920,10 +23923,31 @@
 	}
 
 	function changeMainTitle(mainTitle) {
-		console.log(mainTitle);
 		return {
 			type: 'CHANGE_MAIN_TITLE',
 			mainTitle: mainTitle
+		};
+	}
+
+	function changeStartDate(startDate) {
+		return {
+			type: 'CHANGE_START_DATE',
+			startDate: startDate
+		};
+	}
+
+	function changeEndDate(endDate) {
+		return {
+			type: 'CHANGE_END_DATE',
+			endDate: endDate
+		};
+	}
+
+	function changeGroupLevelOneTitle(gOneTitle, gOneKey) {
+		return {
+			type: 'CHANGE_GROUP_LEVEL_ONE_TITLE',
+			gOneTitle: gOneTitle,
+			gOneKey: gOneKey
 		};
 	}
 
@@ -25586,14 +25610,50 @@
 		_createClass(Configurator, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
+				var self = this;
+
 				$('#inputMainTitle').val(this.state.jsonData.title);
+				var date_input = $('input[name="date"]');
+				var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+				date_input.datepicker({
+					format: 'yyyy-mm-dd',
+					container: container,
+					todayHighlight: true,
+					autoclose: true,
+					orientation: "bottom left",
+					language: "de-DE"
+				}).on('changeDate', function () {
+					var target = $(this),
+					    targetDate = target.val();
+
+					target[0].id === 'dateMainTitle' ? self.props.changeStartDate(targetDate) : self.props.changeEndDate(targetDate);
+				});
 			}
 		}, {
 			key: 'handleMainTitleChange',
 			value: function handleMainTitleChange(event) {
 				var newTitle = event.target.value;
-				console.log('newtitle: ', newTitle);
 				this.props.changeMainTitle(newTitle);
+			}
+		}, {
+			key: 'handleStartDateChange',
+			value: function handleStartDateChange(event) {
+				var newStartDate = event.target.value;
+				this.props.changeStartDate(newStartDate);
+			}
+		}, {
+			key: 'handleEndDateChange',
+			value: function handleEndDateChange(event) {
+				var newEndDate = event.target.value;
+				this.props.changeEndDate(newEndDate);
+			}
+		}, {
+			key: 'handleGroupLevelOneTitleChange',
+			value: function handleGroupLevelOneTitleChange(event) {
+				var newTitle = event.target.value,
+				    groupOneKey = document.getElementById("inputGroupLevelOneTitle").getAttribute("grouponekey");
+
+				this.props.changeGroupLevelOneTitle(newTitle, groupOneKey);
 			}
 		}, {
 			key: 'componentWillReceiveProps',
@@ -25637,13 +25697,55 @@
 							null,
 							_react2.default.createElement(
 								'div',
-								{ className: 'input-group' },
+								{ id: 'inputMainTitleWrapper', className: 'display-hidden' },
 								_react2.default.createElement(
-									'span',
-									{ className: 'input-group-addon' },
-									'Titel'
+									'div',
+									{ className: 'input-group' },
+									_react2.default.createElement(
+										'span',
+										{ className: 'input-group-addon' },
+										'Titel'
+									),
+									_react2.default.createElement('input', { id: 'inputMainTitle', onChange: this.handleMainTitleChange.bind(this), type: 'text', className: 'form-control', name: 'inputMainTitle', placeholder: 'Titel der Fallpauschale' })
 								),
-								_react2.default.createElement('input', { id: 'inputMainTitle', onChange: this.handleMainTitleChange.bind(this), type: 'text', className: 'form-control', name: 'inputMainTitle', placeholder: 'Titel der Fallpauschale' })
+								_react2.default.createElement(
+									'div',
+									{ className: 'bootstrap-iso' },
+									_react2.default.createElement(
+										'div',
+										{ className: 'container-fluid' },
+										_react2.default.createElement(
+											'div',
+											{ className: 'form-group ' },
+											_react2.default.createElement(
+												'span',
+												{ className: 'label label-info' },
+												'G\xFCltig von'
+											),
+											_react2.default.createElement('input', { onChange: this.handleStartDateChange.bind(this), className: 'form-control', id: 'dateMainTitle', name: 'date', type: 'text' }),
+											_react2.default.createElement(
+												'span',
+												{ className: 'label label-info' },
+												'bis'
+											),
+											_react2.default.createElement('input', { onChange: this.handleEndDateChange.bind(this), className: 'form-control', id: 'endDateMainTitle', name: 'date', type: 'text' })
+										)
+									)
+								)
+							),
+							_react2.default.createElement(
+								'div',
+								{ id: 'inputGroupLevelOne', className: 'display-hidden' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'input-group' },
+									_react2.default.createElement(
+										'span',
+										{ className: 'input-group-addon' },
+										'Gruppe L1'
+									),
+									_react2.default.createElement('input', { id: 'inputGroupLevelOneTitle', onChange: this.handleGroupLevelOneTitleChange.bind(this), type: 'text', className: 'form-control', name: 'inputMainTitle', placeholder: 'Titel - Gruppe Level 1' })
+								)
 							)
 						)
 					)
@@ -25707,6 +25809,8 @@
 	    _this.updateAccordion = _this.updateAccordion.bind(_this);
 	    _this.updateGroupsLevelOneToCopy = _this.updateGroupsLevelOneToCopy.bind(_this);
 	    _this.updateJsonData = _this.updateJsonData.bind(_this);
+	    _this.openMainTitlePanel = _this.openMainTitlePanel.bind(_this);
+	    _this.handleEdit = _this.handleEdit.bind(_this);
 
 	    _this.state = {
 	      jsonData: _this.props.store.database.jsonData,
@@ -25810,6 +25914,26 @@
 	      });
 	    }
 	  }, {
+	    key: 'openMainTitlePanel',
+	    value: function openMainTitlePanel(event) {
+	      if ($('#inputMainTitleWrapper').hasClass('display-hidden')) {
+	        $('#inputMainTitleWrapper').removeClass('display-hidden');
+	      } else {
+	        $('#inputMainTitleWrapper').addClass('display-hidden');
+	      }
+	    }
+	  }, {
+	    key: 'handleEdit',
+	    value: function handleEdit(event, key) {
+	      if ($('#inputGroupLevelOne').hasClass('display-hidden')) {
+	        $('#inputGroupLevelOne').removeClass('display-hidden');
+	        $('#inputGroupLevelOneTitle').attr('groupOneKey', key);
+	      } else {
+	        $('#inputGroupLevelOne').addClass('display-hidden');
+	        $('#inputGroupLevelOneTitle').removeAttr('groupOneKey');
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this4 = this;
@@ -25847,8 +25971,10 @@
 	              { className: 'li-accordion li-title-positioning' },
 	              _react2.default.createElement(
 	                'button',
-	                { id: 'btnMainTitle', type: 'button', className: 'btn btn-default btn-xs li-title-btn' },
-	                _react2.default.createElement('i', { className: 'fa fa-wrench', 'aria-hidden': 'true' })
+	                { onClick: function onClick(e) {
+	                    return _this4.openMainTitlePanel(e);
+	                  }, id: 'btnMainTitle', type: 'button', className: 'btn btn-default btn-xs li-title-btn' },
+	                _react2.default.createElement('i', { className: 'fa fa-wrench glow', 'aria-hidden': 'true' })
 	              )
 	            )
 	          )
@@ -25896,7 +26022,9 @@
 	                        null,
 	                        _react2.default.createElement(
 	                          'a',
-	                          { href: '#' },
+	                          { href: '#', onClick: function onClick(e) {
+	                              return _this4.handleEdit(e, elem.key);
+	                            } },
 	                          _react2.default.createElement('i', { className: 'fa-margin fa fa-wrench', 'aria-hidden': 'true' }),
 	                          ' Bearbeiten'
 	                        )
@@ -35961,6 +36089,8 @@
 
 	var _helpers2 = __webpack_require__(244);
 
+	var _jsonPath = __webpack_require__(351);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -35982,9 +36112,33 @@
 					var _accordion = [].concat(_toConsumableArray(state.accordion));
 
 					_accordion = (0, _helpers.setAccordionItems)(_jsonData);
-					console.log('run change_json');
 
 					state = _extends({}, state, { jsonData: _jsonData, accordion: _accordion });
+					break;
+				}
+
+			case "CHANGE_GROUP_LEVEL_ONE_TITLE":
+				{
+					var gOneTitle = action.gOneTitle,
+					    gOneKey = action.gOneKey;
+
+					var _accordion2 = [].concat(_toConsumableArray(state.accordion)),
+					    _jsonData2 = _extends({}, state.jsonData),
+					    i = 0;
+
+					while (i < _jsonData2.groups.length) {
+						if (_jsonData2.groups[i].key === gOneKey) {
+							_jsonData2.groups[i].title = gOneTitle;
+							break;
+						}
+						i++;
+					}
+
+					_accordion2 = (0, _helpers.setAccordionItems)(_jsonData2);
+
+					//let bla = jsonPath(jsonData, "$..groups");
+
+					state = _extends({}, state, { jsonData: _jsonData2, accordion: _accordion2 });
 					break;
 				}
 
@@ -35992,30 +36146,52 @@
 				{
 					var mainTitle = action.mainTitle;
 
-					var _accordion2 = [].concat(_toConsumableArray(state.accordion)),
-					    _jsonData2 = _extends({}, state.jsonData);
+					var _jsonData3 = _extends({}, state.jsonData);
 
-					console.log('title', mainTitle);
+					_jsonData3.title = mainTitle;
 
-					_jsonData2.title = mainTitle;
+					state = _extends({}, state, { jsonData: _jsonData3 });
+					break;
+				}
 
-					state = _extends({}, state, { jsonData: _jsonData2, accordion: _accordion2 });
+			case "CHANGE_START_DATE":
+				{
+					var startDate = action.startDate;
+
+					var _accordion3 = [].concat(_toConsumableArray(state.accordion)),
+					    _jsonData4 = _extends({}, state.jsonData);
+
+					_jsonData4.valid_from = startDate;
+
+					state = _extends({}, state, { jsonData: _jsonData4, accordion: _accordion3 });
+					break;
+				}
+
+			case "CHANGE_END_DATE":
+				{
+					var endDate = action.endDate;
+
+					var _accordion4 = [].concat(_toConsumableArray(state.accordion)),
+					    _jsonData5 = _extends({}, state.jsonData);
+
+					_jsonData5.valid_to = endDate;
+
+					state = _extends({}, state, { jsonData: _jsonData5, accordion: _accordion4 });
 					break;
 				}
 
 			case "INITIALIZE_JSON":
 				{
-					var _accordion3 = [].concat(_toConsumableArray(state.accordion));
+					var _accordion5 = [].concat(_toConsumableArray(state.accordion));
 
-					_accordion3 = (0, _helpers.setAccordionItems)(_EmptyJSON2.default);
+					_accordion5 = (0, _helpers.setAccordionItems)(_EmptyJSON2.default);
 
-					state = _extends({}, state, { jsonData: _EmptyJSON2.default, accordion: _accordion3 });
+					state = _extends({}, state, { jsonData: _EmptyJSON2.default, accordion: _accordion5 });
 					break;
 				}
 
 			case "CHANGE_FULL_ACCORDION":
 				{
-					console.log('change full accordion');
 					state = _extends({}, state, { accordion: action.accordion });
 					break;
 				}
@@ -36026,12 +36202,12 @@
 					    index = action.index,
 					    buttonId = 'btn_group_level_one_mark_' + element.key;
 					var _groupsLevelOneToCopy = action.groupsLevelOneToCopy,
-					    _accordion4 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
 					    indexForElementToRemove = void 0;
 
 
-					if (_accordion4.length > 1) {
-						_accordion4 = (0, _helpers2.removeArrayElement)(_accordion4, index);
+					if (_accordion6.length > 1) {
+						_accordion6 = (0, _helpers2.removeArrayElement)(_accordion6, index);
 						if (element.marked) {
 							$('#' + buttonId).removeClass('marked');
 
@@ -36045,7 +36221,7 @@
 						// delete group and field to copy!
 					}
 
-					state = _extends({}, state, { accordion: _accordion4, groupsLevelOneToCopy: _groupsLevelOneToCopy });
+					state = _extends({}, state, { accordion: _accordion6, groupsLevelOneToCopy: _groupsLevelOneToCopy });
 					return state;
 					break;
 				}
@@ -36059,7 +36235,7 @@
 
 					var subAccordionItems = action.subAccordionItems,
 					    _groupsLevelTwoToCopy = action.groupsLevelTwoToCopy,
-					    _accordion5 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion7 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove = void 0,
 					    indexSubAccordion = void 0;
 
@@ -36077,14 +36253,14 @@
 
 						//delete field to copy!
 
-						indexSubAccordion = _accordion5.map(function (subAccordion, i) {
+						indexSubAccordion = _accordion7.map(function (subAccordion, i) {
 							return subAccordion.key;
 						}).indexOf(groupLevelOneKey);
 
-						_accordion5[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion5[indexSubAccordion].content, _index);
+						_accordion7[indexSubAccordion].content = (0, _helpers2.removeArrayElement)(_accordion7[indexSubAccordion].content, _index);
 					}
 
-					state = _extends({}, state, { accordion: _accordion5, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
+					state = _extends({}, state, { accordion: _accordion7, groupsLevelTwoToCopy: _groupsLevelTwoToCopy });
 					return state;
 					break;
 				}
@@ -36099,7 +36275,7 @@
 
 					var fields = action.fields,
 					    _fieldsToCopy = action.fieldsToCopy,
-					    _accordion6 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion8 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove2 = void 0,
 					    _indexSubAccordion = void 0,
 					    indexAccordionSection = void 0;
@@ -36115,18 +36291,18 @@
 							_fieldsToCopy = (0, _helpers2.removeArrayElement)(_fieldsToCopy, _indexForElementToRemove2);
 						}
 
-						_indexSubAccordion = _accordion6.map(function (subAccordion, i) {
+						_indexSubAccordion = _accordion8.map(function (subAccordion, i) {
 							return subAccordion.key;
 						}).indexOf(_groupLevelOneKey);
 
-						indexAccordionSection = _accordion6[_indexSubAccordion].content.map(function (section, i) {
+						indexAccordionSection = _accordion8[_indexSubAccordion].content.map(function (section, i) {
 							return section.key;
 						}).indexOf(groupLevelTwoKey);
 
-						_accordion6[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion6[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
+						_accordion8[_indexSubAccordion].content[indexAccordionSection].fields = (0, _helpers2.removeArrayElement)(_accordion8[_indexSubAccordion].content[indexAccordionSection].fields, _index2);
 					}
 
-					state = _extends({}, state, { accordion: _accordion6, fieldsToCopy: _fieldsToCopy });
+					state = _extends({}, state, { accordion: _accordion8, fieldsToCopy: _fieldsToCopy });
 					return state;
 					break;
 				}
@@ -36138,7 +36314,7 @@
 					    _buttonId3 = 'btn_group_level_one_mark_' + _element3.key;
 
 					var _groupsLevelOneToCopy2 = action.groupsLevelOneToCopy,
-					    _accordion7 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion9 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove3 = void 0;
 
 
@@ -36148,10 +36324,10 @@
 						}).indexOf(_element3.key);
 
 						_groupsLevelOneToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelOneToCopy2, _indexForElementToRemove3);
-						_accordion7[_index3].marked = false;
+						_accordion9[_index3].marked = false;
 					} else {
-						_accordion7[_index3].marked = true;
-						_groupsLevelOneToCopy2.push(_accordion7[_index3].key);
+						_accordion9[_index3].marked = true;
+						_groupsLevelOneToCopy2.push(_accordion9[_index3].key);
 					}
 
 					state = _extends({}, state, { groupsLevelOneToCopy: _groupsLevelOneToCopy2 });
@@ -36168,11 +36344,11 @@
 
 					var _subAccordionItems = action.subAccordionItems,
 					    _groupsLevelTwoToCopy2 = action.groupsLevelTwoToCopy,
-					    _accordion8 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion10 = [].concat(_toConsumableArray(state.accordion)),
 					    _indexForElementToRemove4 = void 0,
 					    _indexSubAccordion2 = void 0;
 
-					_indexSubAccordion2 = _accordion8.map(function (subAccordion, i) {
+					_indexSubAccordion2 = _accordion10.map(function (subAccordion, i) {
 						return subAccordion.key;
 					}).indexOf(_groupLevelOneKey2);
 
@@ -36181,16 +36357,16 @@
 							return key;
 						}).indexOf(_element4.key);
 
-						_accordion8[_indexSubAccordion2].content[_index4].marked = false;
+						_accordion10[_indexSubAccordion2].content[_index4].marked = false;
 						_groupsLevelTwoToCopy2 = (0, _helpers2.removeArrayElement)(_groupsLevelTwoToCopy2, _indexForElementToRemove4);
 					} else {
-						_accordion8[_indexSubAccordion2].content[_index4].marked = true;
+						_accordion10[_indexSubAccordion2].content[_index4].marked = true;
 						_groupsLevelTwoToCopy2.push(_subAccordionItems[_index4].key);
 					}
 
-					_accordion8[_indexSubAccordion2].content[_index4]['open'] = false;
+					_accordion10[_indexSubAccordion2].content[_index4]['open'] = false;
 
-					state = _extends({}, state, { accordion: _accordion8, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
+					state = _extends({}, state, { accordion: _accordion10, groupsLevelTwoToCopy: _groupsLevelTwoToCopy2 });
 					return state;
 					break;
 				}
@@ -36205,17 +36381,17 @@
 
 					var _fields = action.fields,
 					    _fieldsToCopy2 = action.fieldsToCopy,
-					    _accordion9 = [].concat(_toConsumableArray(state.accordion)),
+					    _accordion11 = [].concat(_toConsumableArray(state.accordion)),
 					    field = void 0,
 					    _indexForElementToRemove5 = void 0,
 					    _indexSubAccordion3 = void 0,
 					    _indexAccordionSection = void 0;
 
-					_indexSubAccordion3 = _accordion9.map(function (subAccordion, i) {
+					_indexSubAccordion3 = _accordion11.map(function (subAccordion, i) {
 						return subAccordion.key;
 					}).indexOf(_groupLevelOneKey3);
 
-					_indexAccordionSection = _accordion9[_indexSubAccordion3].content.map(function (section, i) {
+					_indexAccordionSection = _accordion11[_indexSubAccordion3].content.map(function (section, i) {
 						return section.key;
 					}).indexOf(_groupLevelTwoKey);
 
@@ -36225,17 +36401,17 @@
 						}).indexOf(_element5.key);
 
 						_fieldsToCopy2 = (0, _helpers2.removeArrayElement)(_fieldsToCopy2, _indexForElementToRemove5);
-						_accordion9[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
+						_accordion11[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = false;
 						$('#' + _buttonId5).removeClass('marked');
 					} else {
-						_accordion9[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
+						_accordion11[_indexSubAccordion3].content[_indexAccordionSection].fields[_index5].marked = true;
 						_fieldsToCopy2.push(_fields[_index5].key);
 						$('#' + _buttonId5).addClass('marked');
 					}
 
-					_accordion9[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
+					_accordion11[_indexSubAccordion3].content[_indexAccordionSection]['open'] = true;
 
-					state = _extends({}, state, { accordion: _accordion9, fieldsToCopy: _fieldsToCopy2 });
+					state = _extends({}, state, { accordion: _accordion11, fieldsToCopy: _fieldsToCopy2 });
 					return state;
 					break;
 				}
@@ -36262,11 +36438,11 @@
 	   "valid_from": "2015-01-01",
 	   "valid_to": "2015-12-31",
 	   "groups": [{
-	      "key": "grp_1_Gruppe_Level_1",
+	      "key": "grp_gruppe_level_1",
 	      "title": "Gruppe Level 1",
 	      "type": "group",
 	      "groups": [{
-	         "key": "grp_1.1_Gruppe_Level_2",
+	         "key": "grp_gruppe_level_2",
 	         "title": "Gruppe Level 2",
 	         "type": "group"
 	      }]
@@ -36275,7 +36451,7 @@
 	      "key": "fld_feld_titel",
 	      "title": "Feld Titel",
 	      "type": "code",
-	      "group": "grp_1_Gruppe_Level_1|grp_1.1_Gruppe_Level_2",
+	      "group": "grp_gruppe_level_1|grp_gruppe_level_2",
 	      "cols": 4,
 	      "clearBefore": true,
 	      "clearAfter": false,
@@ -36288,6 +36464,115 @@
 	};
 
 	exports.default = EmptyJSON;
+
+/***/ },
+/* 351 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	exports.jsonPath = jsonPath;
+	/* JSONPath 0.8.0 - XPath for JSON
+	 *
+	 * Copyright (c) 2007 Stefan Goessner (goessner.net)
+	 * Licensed under the MIT (MIT-LICENSE.txt) licence.
+	 */
+	function jsonPath(obj, expr, arg) {
+	   var P = {
+	      resultType: arg && arg.resultType || "VALUE",
+	      result: [],
+	      normalize: function normalize(expr) {
+	         var subx = [];
+	         return expr.replace(/[\['](\??\(.*?\))[\]']/g, function ($0, $1) {
+	            return "[#" + (subx.push($1) - 1) + "]";
+	         }).replace(/'?\.'?|\['?/g, ";").replace(/;;;|;;/g, ";..;").replace(/;$|'?\]|'$/g, "").replace(/#([0-9]+)/g, function ($0, $1) {
+	            return subx[$1];
+	         });
+	      },
+	      asPath: function asPath(path) {
+	         var x = path.split(";"),
+	             p = "$";
+	         for (var i = 1, n = x.length; i < n; i++) {
+	            p += /^[0-9*]+$/.test(x[i]) ? "[" + x[i] + "]" : "['" + x[i] + "']";
+	         }return p;
+	      },
+	      store: function store(p, v) {
+	         if (p) P.result[P.result.length] = P.resultType == "PATH" ? P.asPath(p) : v;
+	         return !!p;
+	      },
+	      trace: function trace(expr, val, path) {
+	         if (expr) {
+	            var x = expr.split(";"),
+	                loc = x.shift();
+	            x = x.join(";");
+	            if (val && val.hasOwnProperty(loc)) P.trace(x, val[loc], path + ";" + loc);else if (loc === "*") P.walk(loc, x, val, path, function (m, l, x, v, p) {
+	               P.trace(m + ";" + x, v, p);
+	            });else if (loc === "..") {
+	               P.trace(x, val, path);
+	               P.walk(loc, x, val, path, function (m, l, x, v, p) {
+	                  _typeof(v[m]) === "object" && P.trace("..;" + x, v[m], p + ";" + m);
+	               });
+	            } else if (/,/.test(loc)) {
+	               // [name1,name2,...]
+	               for (var s = loc.split(/'?,'?/), i = 0, n = s.length; i < n; i++) {
+	                  P.trace(s[i] + ";" + x, val, path);
+	               }
+	            } else if (/^\(.*?\)$/.test(loc)) // [(expr)]
+	               P.trace(P.eval(loc, val, path.substr(path.lastIndexOf(";") + 1)) + ";" + x, val, path);else if (/^\?\(.*?\)$/.test(loc)) // [?(expr)]
+	               P.walk(loc, x, val, path, function (m, l, x, v, p) {
+	                  if (P.eval(l.replace(/^\?\((.*?)\)$/, "$1"), v[m], m)) P.trace(m + ";" + x, v, p);
+	               });else if (/^(-?[0-9]*):(-?[0-9]*):?([0-9]*)$/.test(loc)) // [start:end:step]  phyton slice syntax
+	               P.slice(loc, x, val, path);
+	         } else P.store(path, val);
+	      },
+	      walk: function walk(loc, expr, val, path, f) {
+	         if (val instanceof Array) {
+	            for (var i = 0, n = val.length; i < n; i++) {
+	               if (i in val) f(i, loc, expr, val, path);
+	            }
+	         } else if ((typeof val === "undefined" ? "undefined" : _typeof(val)) === "object") {
+	            for (var m in val) {
+	               if (val.hasOwnProperty(m)) f(m, loc, expr, val, path);
+	            }
+	         }
+	      },
+	      slice: function slice(loc, expr, val, path) {
+	         if (val instanceof Array) {
+	            var len = val.length,
+	                start = 0,
+	                end = len,
+	                step = 1;
+	            loc.replace(/^(-?[0-9]*):(-?[0-9]*):?(-?[0-9]*)$/g, function ($0, $1, $2, $3) {
+	               start = parseInt($1 || start);end = parseInt($2 || end);step = parseInt($3 || step);
+	            });
+	            start = start < 0 ? Math.max(0, start + len) : Math.min(len, start);
+	            end = end < 0 ? Math.max(0, end + len) : Math.min(len, end);
+	            for (var i = start; i < end; i += step) {
+	               P.trace(i + ";" + expr, val, path);
+	            }
+	         }
+	      },
+	      eval: function _eval(x, _v, _vname) {
+	         try {
+	            return $ && _v && eval(x.replace(/@/g, "_v"));
+	         } catch (e) {
+	            throw new SyntaxError("jsonPath: " + e.message + ": " + x.replace(/@/g, "_v").replace(/\^/g, "_a"));
+	         }
+	      }
+	   };
+
+	   var $ = obj;
+	   if (expr && obj && (P.resultType == "VALUE" || P.resultType == "PATH")) {
+	      P.trace(P.normalize(expr).replace(/^\$;/, ""), obj, "$");
+	      return P.result.length ? P.result : false;
+	   }
+	}
 
 /***/ }
 /******/ ]);

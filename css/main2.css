@@ -209,23 +209,31 @@ ul.button-list>li {
     text-align: center;
     font-size: 23px;
     font-weight: bolder;
-    color: darkslateblue;
+    color: #D0F8FF;
+    margin-top: 15px;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF, 0 0 20px #A5F1FF, 0 0 30px #A5F1FF, 0 0 40px #A5F1FF;
 }
 
 .subtitle-style {
-	margin-bottom: 20px;
     text-align: center;
     font-size: 12px;
-    color: maroon;
+    color: #D0F8FF;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF, 0 0 20px #A5F1FF, 0 0 30px #A5F1FF, 0 0 40px #A5F1FF;
 }
 
 .ul-accordion {
 	list-style-type: none;
 	margin: 0 auto;
 }
+.glow {
+	color: #D0F8FF;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF, 0 0 20px #A5F1FF, 0 0 30px #A5F1FF, 0 0 40px #A5F1FF;
+}
 
 .title-wrapper-centering {
 	text-align: center;
+	background-color: black;
+	border-radius: 5px;
 }
 
 .li-accordion {
@@ -257,4 +265,22 @@ ul.button-list>li {
 	opacity: 0.5;
 }
 
+#dateMainTitle {
+	width: 100px !important;
+	display: inline-block;
+	margin: 10px;
+}
 
+#endDateMainTitle {
+	width: 100px !important;
+	display: inline-block;
+	margin: 10px;
+}
+
+.label-info {
+	padding: 8px !important;
+}
+.glow {
+	color: #D0F8FF;
+    text-shadow: 0 0 5px #A5F1FF, 0 0 10px #A5F1FF, 0 0 20px #A5F1FF, 0 0 30px #A5F1FF, 0 0 40px #A5F1FF;
+}

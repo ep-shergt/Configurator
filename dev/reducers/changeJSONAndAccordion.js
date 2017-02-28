@@ -1,6 +1,7 @@
 import { setAccordionItems } from './../helpers.js';
 import jsonData from './../data/EmptyJSON';
 import { removeArrayElement } from './../helpers';
+import { jsonPath } from './../jsonPath';
 
 let accordion = setAccordionItems(jsonData),
 	groupsLevelOneToCopy = [],
@@ -14,7 +15,28 @@ const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCo
 			let accordion = [...state.accordion];
 
 			accordion = setAccordionItems(jsonData);
-			console.log('run change_json');
+
+			state = {...state, jsonData, accordion}
+			break;
+		}
+
+		case "CHANGE_GROUP_LEVEL_ONE_TITLE": {
+			const {gOneTitle, gOneKey} = action;
+			let accordion = [...state.accordion],
+				jsonData = {...state.jsonData},
+				i = 0;
+
+			while(i < jsonData.groups.length) {
+				if(jsonData.groups[i].key === gOneKey) {
+					jsonData.groups[i].title = gOneTitle;
+					break;
+				}
+				i++;
+			}	
+
+			accordion = setAccordionItems(jsonData);
+
+			//let bla = jsonPath(jsonData, "$..groups");
 
 			state = {...state, jsonData, accordion}
 			break;
@@ -22,12 +44,33 @@ const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCo
 
 		case "CHANGE_MAIN_TITLE": {
 			const {mainTitle} = action;
+			let	jsonData = {...state.jsonData};
+
+			jsonData.title = mainTitle;
+
+			state = {...state, jsonData}
+			break;
+		}
+
+		case "CHANGE_START_DATE": {
+			const {startDate} = action;
 			let	accordion = [...state.accordion],
 				jsonData = {...state.jsonData};
 
-			console.log('title', mainTitle);
 
-			jsonData.title = mainTitle;
+
+			jsonData.valid_from = startDate;
+
+			state = {...state, jsonData, accordion}
+			break;
+		}
+
+		case "CHANGE_END_DATE": {
+			const {endDate} = action;
+			let	accordion = [...state.accordion],
+				jsonData = {...state.jsonData};
+
+			jsonData.valid_to = endDate;
 
 			state = {...state, jsonData, accordion}
 			break;
@@ -43,7 +86,6 @@ const changeJSONAndAccordion = (state = {jsonData, accordion, groupsLevelOneToCo
 		}
 
 		case "CHANGE_FULL_ACCORDION": {
-			console.log('change full accordion');
 			state = {...state, accordion: action.accordion}
 			break;
 		}

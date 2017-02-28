@@ -13,7 +13,8 @@ class Accordion extends Component {
     this.updateAccordion = this.updateAccordion.bind(this);
     this.updateGroupsLevelOneToCopy = this.updateGroupsLevelOneToCopy.bind(this);
     this.updateJsonData = this.updateJsonData.bind(this);
-
+    this.openMainTitlePanel = this.openMainTitlePanel.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
 
     this.state = {
       jsonData: this.props.store.database.jsonData,
@@ -104,6 +105,26 @@ class Accordion extends Component {
     });
   }
 
+  openMainTitlePanel(event) {
+    if($('#inputMainTitleWrapper').hasClass('display-hidden')) {
+      $('#inputMainTitleWrapper').removeClass('display-hidden');
+    } else {
+      $('#inputMainTitleWrapper').addClass('display-hidden');
+    }
+  }
+
+  handleEdit(event, key) {
+    if ($('#inputGroupLevelOne').hasClass('display-hidden')) {
+      $('#inputGroupLevelOne').removeClass('display-hidden');
+      $('#inputGroupLevelOneTitle').attr('groupOneKey', key);
+
+    } else {
+      $('#inputGroupLevelOne').addClass('display-hidden');
+      $('#inputGroupLevelOneTitle').removeAttr('groupOneKey');
+    }
+
+  }
+
   render() {
     let {groupsLevelOneToCopy} = this.state;
 
@@ -116,8 +137,8 @@ class Accordion extends Component {
               <div className="subtitle-style">{this.state.jsonData.valid_from} bis {this.state.jsonData.valid_to}</div>
             </li>
             <li className="li-accordion li-title-positioning">
-              <button id="btnMainTitle" type="button" className="btn btn-default btn-xs li-title-btn">
-                <i className="fa fa-wrench" aria-hidden="true"></i>
+              <button onClick={(e) => this.openMainTitlePanel(e)} id="btnMainTitle" type="button" className="btn btn-default btn-xs li-title-btn">
+                <i className="fa fa-wrench glow" aria-hidden="true"></i>
               </button>
             </li>
           </ul>
@@ -139,7 +160,7 @@ class Accordion extends Component {
                         <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                       </button>
                       <ul className="dropdown-menu">
-                        <li><a href="#"><i className="fa-margin fa fa-wrench" aria-hidden="true"></i> Bearbeiten</a></li>
+                        <li><a href="#" onClick={(e) => this.handleEdit(e, elem.key)}><i className="fa-margin fa fa-wrench" aria-hidden="true"></i> Bearbeiten</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-plus" aria-hidden="true"></i> Neues Element</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-scissors" aria-hidden="true"></i> Ausschneiden</a></li>
                         <li><a href="#"><i className="fa-margin fa fa-arrow-down" aria-hidden="true"></i>Einfügen</a></li>
