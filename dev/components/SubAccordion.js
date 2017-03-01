@@ -128,7 +128,7 @@ class SubAccordion extends Component {
           <div className={this.props.elem.open 
             ? "content-text content-text-open" 
             : "content-text"}>
-            <div>
+            <div className="acc-width">
               <div>
                 {this.state.subAccordionItems.map((elem, j) => {
                   let buttonId = "btn_group_level_two_mark_" + elem.key;

@@ -26278,7 +26278,7 @@
 	            { className: this.props.elem.open ? "content-text content-text-open" : "content-text" },
 	            _react2.default.createElement(
 	              'div',
-	              null,
+	              { className: 'acc-width' },
 	              _react2.default.createElement(
 	                'div',
 	                null,
